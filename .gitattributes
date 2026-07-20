@@ -1,0 +1,12 @@
+# Normaliza a LF en el repo (evita que CRLF de Windows rompa el build en Linux/Docker).
+* text=auto eol=lf
+
+# Binarios: no tocar.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
