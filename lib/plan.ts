@@ -40,6 +40,20 @@ export async function getOrCreateCurrentWeekPlan(userId: string) {
   });
 }
 
+/** Huecos de la semana actual del usuario (para el selector de El Duelo). */
+export async function getCurrentWeekSlots(userId: string) {
+  const plan = await getOrCreateCurrentWeekPlan(userId);
+  return plan.slots
+    .slice()
+    .sort((a, b) => a.dayOfWeek - b.dayOfWeek)
+    .map((s) => ({
+      slotId: s.id,
+      dayOfWeek: s.dayOfWeek,
+      mealType: s.mealType,
+      recipeTitle: s.recipe?.title ?? null,
+    }));
+}
+
 /**
  * Asigna (o quita, con recipeId=null) una receta a un hueco del plan, verificando
  * que el hueco pertenece al usuario. Devuelve el slot actualizado o null si no es suyo.
