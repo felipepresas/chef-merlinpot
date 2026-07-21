@@ -15,3 +15,19 @@ export async function getRecipes() {
     },
   });
 }
+
+/** Ficha completa de una receta (ingredientes ordenados por pasillo). */
+export async function getRecipeBySlug(slug: string) {
+  return prisma.recipe.findUnique({
+    where: { slug },
+    include: {
+      ingredients: {
+        include: { ingredient: true },
+        orderBy: { ingredient: { category: "asc" } },
+      },
+    },
+  });
+}
+
+/** Paso estructurado de una receta (Recipe.steps es Json). */
+export type RecipeStep = { text: string; durationMin?: number };

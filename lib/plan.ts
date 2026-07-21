@@ -58,6 +58,6 @@ export async function assignRecipeToSlot(
   return prisma.planSlot.update({
     where: { id: slotId },
     data: { recipeId },
-    include: { recipe: { select: { id: true, title: true } } },
+    include: { recipe: { select: { id: true, title: true, slug: true } } },
   });
 }

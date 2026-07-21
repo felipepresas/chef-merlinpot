@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Plus, X, Clock, Loader2, UtensilsCrossed } from "lucide-react";
@@ -8,7 +9,7 @@ import { toast } from "sonner";
 import { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
 import type { MealType } from "@prisma/client";
 
-type SlotRecipe = { id: string; title: string } | null;
+type SlotRecipe = { id: string; title: string; slug: string } | null;
 type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipe: SlotRecipe };
 type Recipe = { id: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
 
@@ -64,7 +65,12 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                     </p>
                     {slot.recipe ? (
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-sm font-medium text-ink">{slot.recipe.title}</span>
+                        <Link
+                          href={`/recetas/${slot.recipe.slug}`}
+                          className="text-sm font-medium text-ink hover:text-brand hover:underline"
+                        >
+                          {slot.recipe.title}
+                        </Link>
                         <button
                           aria-label="Quitar"
                           onClick={() => assign.mutate({ slotId: slot.slotId, recipeId: null })}

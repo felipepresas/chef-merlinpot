@@ -19,7 +19,7 @@ export default async function SemanaPage() {
       slotId: s.id,
       dayOfWeek: s.dayOfWeek,
       mealType: s.mealType,
-      recipe: s.recipe ? { id: s.recipe.id, title: s.recipe.title } : null,
+      recipe: s.recipe ? { id: s.recipe.id, title: s.recipe.title, slug: s.recipe.slug } : null,
     }));
 
   return (
