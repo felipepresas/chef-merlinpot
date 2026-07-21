@@ -1,11 +1,14 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import type { MealType } from "@prisma/client";
+import type { MealType, DietTag } from "@prisma/client";
 
-/** Catálogo de recetas para el selector del plan (filtrable por tipo de comida). */
-export async function getRecipes(mealType?: MealType) {
+/** Catálogo de recetas, filtrable por tipo de comida y por dietas que debe cumplir. */
+export async function getRecipes(mealType?: MealType, diets?: DietTag[]) {
   return prisma.recipe.findMany({
-    where: mealType ? { mealType } : undefined,
+    where: {
+      ...(mealType ? { mealType } : {}),
+      ...(diets && diets.length ? { diets: { hasEvery: diets } } : {}),
+    },
     orderBy: { title: "asc" },
     select: {
       id: true,

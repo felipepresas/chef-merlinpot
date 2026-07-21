@@ -1,8 +1,20 @@
-import { PrismaClient, Unit, MealType, Difficulty } from "@prisma/client";
+import { PrismaClient, Unit, MealType, Difficulty, DietTag } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
+
+// Dietas que cumple cada receta (curado). VEGANO: ninguna de las semilla.
+const DIET_BY_SLUG: Record<string, DietTag[]> = {
+  "espaguetis-bolonesa": [DietTag.SIN_LACTOSA],
+  "fajitas-de-pollo": [DietTag.SIN_LACTOSA],
+  "tortilla-de-patatas": [DietTag.VEGETARIANO, DietTag.SIN_GLUTEN, DietTag.SIN_LACTOSA],
+  "ensalada-cesar-pollo": [],
+  "lentejas-chorizo": [DietTag.SIN_GLUTEN, DietTag.SIN_LACTOSA],
+  "crema-de-calabacin": [DietTag.VEGETARIANO, DietTag.SIN_GLUTEN],
+  "pollo-al-horno-patatas": [DietTag.SIN_GLUTEN, DietTag.SIN_LACTOSA],
+  "salmon-al-horno": [DietTag.SIN_GLUTEN, DietTag.SIN_LACTOSA],
+};
 
 // ─── Ingredientes (name único, con pasillo, unidad por defecto y flag despensa) ──
 type IngredientSeed = { name: string; category: string; defaultUnit: Unit; isStaple?: boolean };
@@ -232,6 +244,7 @@ async function main() {
       title: r.title, description: r.description, mealType: r.mealType, servings: r.servings,
       prepTimeMin: r.prepTimeMin, cookTimeMin: r.cookTimeMin, difficulty: r.difficulty ?? Difficulty.EASY,
       cuisine: r.cuisine, youtubeVideoId: r.youtubeVideoId, steps: r.steps, isSeed: true,
+      diets: DIET_BY_SLUG[r.slug] ?? [],
     };
     await prisma.recipe.upsert({
       where: { slug: r.slug },

@@ -38,6 +38,14 @@ enum Difficulty {
   HARD
 }
 
+// Restricciones dietéticas que una receta cumple / que un usuario requiere.
+enum DietTag {
+  VEGETARIANO
+  VEGANO
+  SIN_GLUTEN
+  SIN_LACTOSA
+}
+
 // ─── Identidad ──────────────────────────────────────────────────
 
 model User {
@@ -45,9 +53,10 @@ model User {
   firebaseUid String   @unique
   email       String   @unique
   name        String?
-  prefs       Json     @default("{\"householdSize\": 2}")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  prefs       Json      @default("{\"householdSize\": 2}")
+  diets       DietTag[] @default([]) // restricciones dietéticas del usuario
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   householdId String?
   household   Household? @relation(fields: [householdId], references: [id], onDelete: SetNull)
@@ -81,6 +90,7 @@ model Recipe {
   imageUrl       String?
   steps          Json       @default("[]") // array de { text, durationMin? }
   cuisine        String?
+  diets          DietTag[]  @default([]) // dietas que la receta cumple
   isSeed         Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

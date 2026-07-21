@@ -62,13 +62,22 @@ export async function acceptDuel(userId: string, sessionId: string): Promise<{ o
 
   await prisma.duelParticipant.updateMany({ where: { sessionId, userId }, data: { accepted: true } });
 
-  const parts = await prisma.duelParticipant.findMany({ where: { sessionId }, orderBy: { order: "asc" } });
+  const parts = await prisma.duelParticipant.findMany({
+    where: { sessionId },
+    include: { user: { select: { diets: true } } },
+    orderBy: { order: "asc" },
+  });
   const session = await prisma.duelSession.findUnique({ where: { id: sessionId } });
   if (!session || session.status !== "WAITING") return { ok: true };
 
   if (parts.every((p) => p.accepted)) {
+    // pool respeta la unión de las dietas de los participantes
+    const diets = [...new Set(parts.flatMap((p) => p.user.diets))];
     const recipes = await prisma.recipe.findMany({
-      where: session.mealType ? { mealType: session.mealType } : undefined,
+      where: {
+        ...(session.mealType ? { mealType: session.mealType } : {}),
+        ...(diets.length ? { diets: { hasEvery: diets } } : {}),
+      },
       select: { id: true },
     });
     if (recipes.length < 2) return { error: "No hay suficientes recetas para el duelo." };
