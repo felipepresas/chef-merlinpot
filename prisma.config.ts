@@ -13,6 +13,10 @@ const databaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
 export default defineConfig({
   schema: path.join(__dirname, "prisma", "schema.prisma"),
+  migrations: {
+    // Prisma 7: el comando de seed se declara aquí (ya no en package.json).
+    seed: "tsx prisma/seed.ts",
+  },
   datasource: {
     url: databaseUrl || "postgresql://placeholder:placeholder@localhost:5432/placeholder",
   },
