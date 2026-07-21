@@ -5,10 +5,31 @@ import { useRouter } from "next/navigation";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { toast } from "sonner";
 import { Sparkles, Loader2 } from "lucide-react";
+
+/** Traduce el código de error de Firebase Auth a un mensaje claro. */
+function authErrorMessage(code: string | undefined, mode: "login" | "register"): string {
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "Ese email ya tiene cuenta. Entra en su lugar.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      return "Email o contraseña incorrectos.";
+    case "auth/weak-password":
+      return "La contraseña debe tener al menos 6 caracteres.";
+    case "auth/invalid-email":
+      return "Ese email no es válido.";
+    case "auth/too-many-requests":
+      return "Demasiados intentos. Prueba de nuevo en un rato.";
+    default:
+      return mode === "login" ? "No se pudo iniciar sesión." : "No se pudo crear la cuenta.";
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,10 +55,24 @@ export default function LoginPage() {
       toast.success(mode === "login" ? "¡Bienvenido de vuelta!" : "¡Cuenta creada!");
       router.push("/semana");
       router.refresh();
-    } catch {
-      toast.error("No se pudo iniciar sesión. Revisa el email y la contraseña.");
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      toast.error(authErrorMessage(code, mode));
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function onReset() {
+    if (!email.trim()) {
+      toast.info("Escribe tu email arriba y te enviamos el enlace.");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(getFirebaseAuth(), email.trim());
+      toast.success("Te enviamos un email para restablecer la contraseña.");
+    } catch (err) {
+      toast.error(authErrorMessage((err as { code?: string })?.code, "login"));
     }
   }
 
@@ -80,6 +115,16 @@ export default function LoginPage() {
           {mode === "login" ? "Entrar" : "Crear cuenta"}
         </button>
       </form>
+
+      {mode === "login" && (
+        <button
+          type="button"
+          onClick={onReset}
+          className="mt-4 text-center text-sm text-ink/50 hover:text-brand"
+        >
+          ¿Olvidaste la contraseña?
+        </button>
+      )}
 
       <button
         type="button"

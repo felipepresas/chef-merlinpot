@@ -5,10 +5,7 @@ import { useRouter } from "next/navigation";
 import { Home, Check, X, Loader2, LogOut, Clock } from "lucide-react";
 import { toast } from "sonner";
 import type { HouseholdData } from "@/lib/household";
-
-function initial(name: string | null, email: string) {
-  return (name?.trim()?.[0] ?? email[0] ?? "?").toUpperCase();
-}
+import { Avatar } from "@/components/ui/avatar";
 
 export function HouseholdSection() {
   const qc = useQueryClient();
@@ -113,9 +110,7 @@ export function HouseholdSection() {
             <div className="flex flex-wrap gap-2">
               {d?.members.map((m) => (
                 <span key={m.userId} className="inline-flex items-center gap-2 rounded-full bg-cream py-1 pl-1 pr-3">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand">
-                    {initial(m.name, m.email)}
-                  </span>
+                  <Avatar name={m.name} email={m.email} size="sm" />
                   <span className="text-sm text-ink">{m.isMe ? "Tú" : (m.name ?? m.email)}</span>
                 </span>
               ))}

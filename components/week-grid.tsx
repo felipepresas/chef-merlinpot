@@ -11,7 +11,7 @@ import type { MealType } from "@prisma/client";
 
 type SlotRecipe = { id: string; title: string; slug: string } | null;
 type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipe: SlotRecipe };
-type Recipe = { id: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
+type Recipe = { id: string; slug: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
 
 export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
@@ -28,22 +28,30 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
   });
 
   const assign = useMutation({
-    mutationFn: async (vars: { slotId: string; recipeId: string | null }) => {
+    mutationFn: async (vars: { slotId: string; recipe: SlotRecipe }) => {
       const res = await fetch("/api/plan/slot", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(vars),
+        body: JSON.stringify({ slotId: vars.slotId, recipeId: vars.recipe?.id ?? null }),
       });
       if (!res.ok) throw new Error();
       return (await res.json()) as { recipe: SlotRecipe };
     },
-    onSuccess: (data, vars) => {
-      setSlots((prev) =>
-        prev.map((s) => (s.slotId === vars.slotId ? { ...s, recipe: data.recipe } : s)),
-      );
+    // Optimista: pinta el cambio ya y cierra el diálogo; guarda el estado previo para revertir.
+    onMutate: (vars) => {
+      const prev = slots;
+      setSlots((s) => s.map((x) => (x.slotId === vars.slotId ? { ...x, recipe: vars.recipe } : x)));
       setOpenSlot(null);
+      return { prev };
     },
-    onError: () => toast.error("No se pudo guardar el cambio."),
+    onError: (_e, _vars, ctx) => {
+      if (ctx?.prev) setSlots(ctx.prev);
+      toast.error("No se pudo guardar el cambio.");
+    },
+    onSuccess: (data, vars) => {
+      // reconcilia con lo que confirma el servidor
+      setSlots((s) => s.map((x) => (x.slotId === vars.slotId ? { ...x, recipe: data.recipe } : x)));
+    },
   });
 
   const fill = useMutation({
@@ -121,7 +129,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                         </Link>
                         <button
                           aria-label="Quitar"
-                          onClick={() => assign.mutate({ slotId: slot.slotId, recipeId: null })}
+                          onClick={() => assign.mutate({ slotId: slot.slotId, recipe: null })}
                           className="shrink-0 text-ink/30 hover:text-paprika"
                         >
                           <X className="h-4 w-4" />
@@ -176,7 +184,13 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                 <button
                   key={r.id}
                   disabled={assign.isPending}
-                  onClick={() => openSlot && assign.mutate({ slotId: openSlot.slotId, recipeId: r.id })}
+                  onClick={() =>
+                    openSlot &&
+                    assign.mutate({
+                      slotId: openSlot.slotId,
+                      recipe: { id: r.id, title: r.title, slug: r.slug },
+                    })
+                  }
                   className="flex w-full items-center gap-3 rounded-xl border border-ink/5 bg-cream p-3 text-left transition hover:border-brand disabled:opacity-60"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">

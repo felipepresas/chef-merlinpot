@@ -1,6 +1,7 @@
 import { getCurrentUser } from "@/lib/auth/session";
 import { getShoppingList } from "@/lib/shopping";
 import { ShoppingList } from "@/components/shopping-list";
+import { EmptyState } from "@/components/ui/empty-state";
 import { redirect } from "next/navigation";
 import { ShoppingCart } from "lucide-react";
 import Link from "next/link";
@@ -20,12 +21,12 @@ export default async function CompraPage() {
       <p className="mb-4 text-sm text-ink/60">De las recetas de tu semana, por pasillos.</p>
 
       {isEmpty ? (
-        <div className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-dashed border-ink/10 p-10 text-center text-ink/50">
-          <ShoppingCart className="h-8 w-8 text-paprika" />
-          <p className="text-sm">Tu lista está vacía.</p>
-          <Link href="/semana" className="text-sm font-medium text-brand hover:underline">
-            Asigna recetas a tu semana →
-          </Link>
+        <div className="mt-8">
+          <EmptyState icon={ShoppingCart} iconClassName="text-paprika" title="Tu lista está vacía.">
+            <Link href="/semana" className="font-medium text-brand hover:underline">
+              Asigna recetas a tu semana →
+            </Link>
+          </EmptyState>
         </div>
       ) : (
         <ShoppingList aisles={aisles} />

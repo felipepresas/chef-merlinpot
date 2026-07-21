@@ -5,10 +5,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserPlus, Check, X, Loader2, Users, Clock, Home } from "lucide-react";
 import { toast } from "sonner";
 import type { FriendData } from "@/lib/friends";
-
-function initial(name: string | null, email: string) {
-  return (name?.trim()?.[0] ?? email[0] ?? "?").toUpperCase();
-}
+import { Avatar } from "@/components/ui/avatar";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function FriendsManager() {
   const qc = useQueryClient();
@@ -125,7 +123,7 @@ export function FriendsManager() {
           <ul className="space-y-2">
             {d.incoming.map((r) => (
               <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3">
-                <Avatar text={initial(r.name, r.email)} />
+                <Avatar name={r.name} email={r.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{r.name ?? r.email}</p>
                   {r.name && <p className="truncate text-xs text-ink/50">{r.email}</p>}
@@ -156,15 +154,14 @@ export function FriendsManager() {
           Amigos {d && `(${d.friends.length})`}
         </h2>
         {d && d.friends.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-ink/10 p-8 text-center text-ink/50">
-            <Users className="h-7 w-7 text-brand" />
-            <p className="text-sm">Aún no tienes amigos. Añade a alguien por su email para jugar El Duelo juntos.</p>
-          </div>
+          <EmptyState icon={Users}>
+            Aún no tienes amigos. Añade a alguien por su email para jugar El Duelo juntos.
+          </EmptyState>
         ) : (
           <ul className="space-y-2">
             {d?.friends.map((f) => (
               <li key={f.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3">
-                <Avatar text={initial(f.name, f.email)} />
+                <Avatar name={f.name} email={f.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{f.name ?? f.email}</p>
                   {f.name && <p className="truncate text-xs text-ink/50">{f.email}</p>}
@@ -196,7 +193,7 @@ export function FriendsManager() {
           <ul className="space-y-2">
             {d.outgoing.map((r) => (
               <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3 opacity-70">
-                <Avatar text={initial(r.name, r.email)} />
+                <Avatar name={r.name} email={r.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{r.name ?? r.email}</p>
                 </div>
@@ -212,13 +209,5 @@ export function FriendsManager() {
         </section>
       )}
     </div>
-  );
-}
-
-function Avatar({ text }: { text: string }) {
-  return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10 font-semibold text-brand">
-      {text}
-    </span>
   );
 }
