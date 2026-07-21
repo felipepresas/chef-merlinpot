@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserPlus, Check, X, Loader2, Users, Clock } from "lucide-react";
+import { UserPlus, Check, X, Loader2, Users, Clock, Home } from "lucide-react";
 import { toast } from "sonner";
 import type { FriendData } from "@/lib/friends";
 
@@ -63,6 +63,23 @@ export function FriendsManager() {
     },
     onSuccess: refresh,
     onError: () => toast.error("No se pudo eliminar."),
+  });
+
+  const shareHome = useMutation({
+    mutationFn: async (friendId: string) => {
+      const res = await fetch("/api/household", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ friendId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Error");
+    },
+    onSuccess: () => {
+      toast.success("Invitación de hogar enviada");
+      qc.invalidateQueries({ queryKey: ["household"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const d = data.data;
@@ -152,6 +169,13 @@ export function FriendsManager() {
                   <p className="truncate text-sm font-medium text-ink">{f.name ?? f.email}</p>
                   {f.name && <p className="truncate text-xs text-ink/50">{f.email}</p>}
                 </div>
+                <button
+                  onClick={() => shareHome.mutate(f.userId)}
+                  disabled={shareHome.isPending}
+                  className="inline-flex items-center gap-1 rounded-lg bg-brand/10 px-2.5 py-1.5 text-xs font-medium text-brand hover:bg-brand/20 disabled:opacity-60"
+                >
+                  <Home className="h-3.5 w-3.5" /> Hogar
+                </button>
                 <button
                   onClick={() => remove.mutate(f.friendshipId)}
                   className="text-ink/30 hover:text-paprika"
