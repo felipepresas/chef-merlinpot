@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { mondayOf } from "@/lib/plan";
+import { getHouseholdId, getHouseholdSize } from "@/lib/household";
 import type { Unit } from "@prisma/client";
 
 // Unidades que se cuentan por piezas → se redondea hacia arriba (no compras media cebolla).
@@ -24,19 +25,17 @@ type Line = { ingredientName: string; aisle: string; quantity: number; unit: Uni
  * suma por (ingrediente, unidad), escala por tamaño del hogar y descarta staples/al gusto.
  */
 async function computeLines(userId: string): Promise<Line[]> {
+  const householdId = await getHouseholdId(userId);
   const weekStartDate = mondayOf();
-  const [plan, user] = await Promise.all([
+  const [plan, household] = await Promise.all([
     prisma.weekPlan.findUnique({
-      where: { userId_weekStartDate: { userId, weekStartDate } },
+      where: { householdId_weekStartDate: { householdId, weekStartDate } },
       include: {
         slots: { include: { recipe: { include: { ingredients: { include: { ingredient: true } } } } } },
       },
     }),
-    prisma.user.findUnique({ where: { id: userId } }),
+    getHouseholdSize(householdId),
   ]);
-
-  const prefs = (user?.prefs ?? {}) as { householdSize?: number };
-  const household = prefs.householdSize && prefs.householdSize > 0 ? prefs.householdSize : 2;
 
   const map = new Map<string, Line>();
   for (const slot of plan?.slots ?? []) {
@@ -74,8 +73,9 @@ export type ShoppingAisle = { aisle: string; items: ShoppingItemView[] };
  * "comprado" de los ítems que sobreviven) y la devuelve agrupada por pasillo.
  */
 export async function getShoppingList(userId: string): Promise<ShoppingAisle[]> {
+  const householdId = await getHouseholdId(userId);
   const weekStartDate = mondayOf();
-  const plan = await prisma.weekPlan.findUnique({ where: { userId_weekStartDate: { userId, weekStartDate } } });
+  const plan = await prisma.weekPlan.findUnique({ where: { householdId_weekStartDate: { householdId, weekStartDate } } });
   if (!plan) return [];
 
   const list = await prisma.shoppingList.upsert({
@@ -138,10 +138,11 @@ export async function getShoppingList(userId: string): Promise<ShoppingAisle[]> 
 
 /** Marca/desmarca un ítem como comprado, verificando propiedad. */
 export async function toggleShoppingItem(userId: string, itemId: string, checked: boolean) {
+  const householdId = await getHouseholdId(userId);
   const item = await prisma.shoppingItem.findUnique({
     where: { id: itemId },
-    include: { list: { include: { weekPlan: { select: { userId: true } } } } },
+    include: { list: { include: { weekPlan: { select: { householdId: true } } } } },
   });
-  if (!item || item.list.weekPlan.userId !== userId) return null;
+  if (!item || item.list.weekPlan.householdId !== householdId) return null;
   return prisma.shoppingItem.update({ where: { id: itemId }, data: { checked } });
 }

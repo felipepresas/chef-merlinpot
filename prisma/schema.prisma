@@ -49,13 +49,20 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  weekPlans WeekPlan[]
+  householdId String?
+  household   Household? @relation(fields: [householdId], references: [id], onDelete: SetNull)
+
   favorites Favorite[]
 
   sentFriendships     Friendship[]      @relation("SentFriendships")
   receivedFriendships Friendship[]      @relation("ReceivedFriendships")
   hostedDuels         DuelSession[]     @relation("HostedDuels")
   duelParticipations  DuelParticipant[] @relation("DuelParticipations")
+
+  sentHouseholdInvites     HouseholdInvite[] @relation("SentHouseholdInvites")
+  receivedHouseholdInvites HouseholdInvite[] @relation("ReceivedHouseholdInvites")
+
+  @@index([householdId])
 }
 
 // ─── Catálogo ───────────────────────────────────────────────────
@@ -111,16 +118,16 @@ model RecipeIngredient {
 
 model WeekPlan {
   id            String   @id @default(cuid())
-  userId        String
+  householdId   String
   weekStartDate DateTime // lunes de la semana
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  household    Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
   slots        PlanSlot[]
   shoppingList ShoppingList?
 
-  @@unique([userId, weekStartDate])
+  @@unique([householdId, weekStartDate])
 }
 
 model PlanSlot {
@@ -236,4 +243,31 @@ model DuelParticipant {
 
   @@unique([sessionId, userId])
   @@index([userId])
+}
+
+// ─── Hogar (plan y compra compartidos) ──────────────────────────
+
+model Household {
+  id        String   @id @default(cuid())
+  name      String?
+  createdAt DateTime @default(now())
+
+  members   User[]
+  weekPlans WeekPlan[]
+  invites   HouseholdInvite[]
+}
+
+model HouseholdInvite {
+  id          String   @id @default(cuid())
+  householdId String
+  inviterId   String
+  inviteeId   String
+  createdAt   DateTime @default(now())
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  inviter   User      @relation("SentHouseholdInvites", fields: [inviterId], references: [id], onDelete: Cascade)
+  invitee   User      @relation("ReceivedHouseholdInvites", fields: [inviteeId], references: [id], onDelete: Cascade)
+
+  @@unique([householdId, inviteeId])
+  @@index([inviteeId])
 }

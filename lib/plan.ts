@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { MEALS } from "@/lib/plan-labels";
+import { getHouseholdId } from "@/lib/household";
 
 export { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
 
@@ -17,18 +18,19 @@ export function mondayOf(date = new Date()): Date {
  * (7 días × almuerzo/cena) y la receta asignada a cada uno.
  */
 export async function getOrCreateCurrentWeekPlan(userId: string) {
+  const householdId = await getHouseholdId(userId);
   const weekStartDate = mondayOf();
   const include = { slots: { include: { recipe: true } } } as const;
 
   const existing = await prisma.weekPlan.findUnique({
-    where: { userId_weekStartDate: { userId, weekStartDate } },
+    where: { householdId_weekStartDate: { householdId, weekStartDate } },
     include,
   });
   if (existing) return existing;
 
   return prisma.weekPlan.create({
     data: {
-      userId,
+      householdId,
       weekStartDate,
       slots: {
         create: Array.from({ length: 7 }).flatMap((_, day) =>
@@ -63,11 +65,12 @@ export async function assignRecipeToSlot(
   slotId: string,
   recipeId: string | null,
 ) {
+  const householdId = await getHouseholdId(userId);
   const slot = await prisma.planSlot.findUnique({
     where: { id: slotId },
-    include: { weekPlan: { select: { userId: true } } },
+    include: { weekPlan: { select: { householdId: true } } },
   });
-  if (!slot || slot.weekPlan.userId !== userId) return null;
+  if (!slot || slot.weekPlan.householdId !== householdId) return null;
 
   return prisma.planSlot.update({
     where: { id: slotId },
