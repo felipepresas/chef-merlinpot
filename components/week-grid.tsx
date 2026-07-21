@@ -1,0 +1,150 @@
+"use client";
+
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Plus, X, Clock, Loader2, UtensilsCrossed } from "lucide-react";
+import { toast } from "sonner";
+import { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
+import type { MealType } from "@prisma/client";
+
+type SlotRecipe = { id: string; title: string } | null;
+type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipe: SlotRecipe };
+type Recipe = { id: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
+
+export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
+  const [slots, setSlots] = useState<Slot[]>(initialSlots);
+  const [openSlot, setOpenSlot] = useState<Slot | null>(null);
+
+  const recipes = useQuery<Recipe[]>({
+    queryKey: ["recipes"],
+    queryFn: async () => {
+      const res = await fetch("/api/recetas");
+      if (!res.ok) throw new Error();
+      return res.json();
+    },
+  });
+
+  const assign = useMutation({
+    mutationFn: async (vars: { slotId: string; recipeId: string | null }) => {
+      const res = await fetch("/api/plan/slot", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(vars),
+      });
+      if (!res.ok) throw new Error();
+      return (await res.json()) as { recipe: SlotRecipe };
+    },
+    onSuccess: (data, vars) => {
+      setSlots((prev) =>
+        prev.map((s) => (s.slotId === vars.slotId ? { ...s, recipe: data.recipe } : s)),
+      );
+      setOpenSlot(null);
+    },
+    onError: () => toast.error("No se pudo guardar el cambio."),
+  });
+
+  const slotFor = (day: number, meal: MealType) =>
+    slots.find((s) => s.dayOfWeek === day && s.mealType === meal);
+
+  return (
+    <>
+      <div className="space-y-3">
+        {DAYS_ES.map((dayName, day) => (
+          <div key={day} className="rounded-2xl border border-ink/5 bg-white p-4">
+            <h2 className="mb-3 text-sm font-semibold text-ink">{dayName}</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {MEALS.map((meal) => {
+                const slot = slotFor(day, meal);
+                if (!slot) return null;
+                return (
+                  <div key={meal} className="rounded-xl bg-cream p-3">
+                    <p className="mb-1 text-xs font-medium uppercase tracking-wide text-ink/40">
+                      {MEAL_LABEL[meal]}
+                    </p>
+                    {slot.recipe ? (
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="text-sm font-medium text-ink">{slot.recipe.title}</span>
+                        <button
+                          aria-label="Quitar"
+                          onClick={() => assign.mutate({ slotId: slot.slotId, recipeId: null })}
+                          className="shrink-0 text-ink/30 hover:text-paprika"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setOpenSlot(slot)}
+                        className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-700"
+                      >
+                        <Plus className="h-4 w-4" /> Añadir
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Dialog.Root open={!!openSlot} onOpenChange={(o) => !o && setOpenSlot(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm" />
+          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <Dialog.Title className="text-lg font-bold text-ink">
+                Elige una receta
+                {openSlot && (
+                  <span className="ml-2 text-sm font-normal text-ink/50">
+                    {DAYS_ES[openSlot.dayOfWeek]} · {MEAL_LABEL[openSlot.mealType]}
+                  </span>
+                )}
+              </Dialog.Title>
+              <Dialog.Close className="text-ink/40 hover:text-ink">
+                <X className="h-5 w-5" />
+              </Dialog.Close>
+            </div>
+
+            {recipes.isLoading && (
+              <div className="flex justify-center py-10 text-ink/40">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+
+            {recipes.data && recipes.data.length === 0 && (
+              <p className="py-8 text-center text-sm text-ink/50">Aún no hay recetas en el catálogo.</p>
+            )}
+
+            <div className="space-y-2">
+              {recipes.data?.map((r) => (
+                <button
+                  key={r.id}
+                  disabled={assign.isPending}
+                  onClick={() => openSlot && assign.mutate({ slotId: openSlot.slotId, recipeId: r.id })}
+                  className="flex w-full items-center gap-3 rounded-xl border border-ink/5 bg-cream p-3 text-left transition hover:border-brand disabled:opacity-60"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                    <UtensilsCrossed className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-medium text-ink">{r.title}</span>
+                    <span className="flex items-center gap-2 text-xs text-ink/50">
+                      {r.cuisine && <span>{r.cuisine}</span>}
+                      {r.cookTimeMin != null && (
+                        <span className="inline-flex items-center gap-1">
+                          <Clock className="h-3 w-3" /> {r.cookTimeMin} min
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
+  );
+}

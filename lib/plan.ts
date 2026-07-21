@@ -1,10 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import type { MealType } from "@prisma/client";
+import { MEALS } from "@/lib/plan-labels";
 
-export const DAYS_ES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-export const MEALS: MealType[] = ["LUNCH", "DINNER"];
-export const MEAL_LABEL: Record<MealType, string> = { LUNCH: "Almuerzo", DINNER: "Cena" };
+export { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
 
 /** Lunes (UTC) de la semana que contiene `date`. */
 export function mondayOf(date = new Date()): Date {
@@ -39,5 +37,27 @@ export async function getOrCreateCurrentWeekPlan(userId: string) {
       },
     },
     include,
+  });
+}
+
+/**
+ * Asigna (o quita, con recipeId=null) una receta a un hueco del plan, verificando
+ * que el hueco pertenece al usuario. Devuelve el slot actualizado o null si no es suyo.
+ */
+export async function assignRecipeToSlot(
+  userId: string,
+  slotId: string,
+  recipeId: string | null,
+) {
+  const slot = await prisma.planSlot.findUnique({
+    where: { id: slotId },
+    include: { weekPlan: { select: { userId: true } } },
+  });
+  if (!slot || slot.weekPlan.userId !== userId) return null;
+
+  return prisma.planSlot.update({
+    where: { id: slotId },
+    data: { recipeId },
+    include: { recipe: { select: { id: true, title: true } } },
   });
 }
