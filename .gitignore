@@ -36,3 +36,6 @@ Thumbs.db
 # tipos / caché
 *.tsbuildinfo
 /coverage
+
+# volcados temporales de la API de Dokploy (pueden llevar secretos)
+_dk_*
