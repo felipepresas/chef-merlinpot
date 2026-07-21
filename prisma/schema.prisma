@@ -51,6 +51,11 @@ model User {
 
   weekPlans WeekPlan[]
   favorites Favorite[]
+
+  sentFriendships     Friendship[]      @relation("SentFriendships")
+  receivedFriendships Friendship[]      @relation("ReceivedFriendships")
+  hostedDuels         DuelSession[]     @relation("HostedDuels")
+  duelParticipations  DuelParticipant[] @relation("DuelParticipations")
 }
 
 // ─── Catálogo ───────────────────────────────────────────────────
@@ -167,4 +172,68 @@ model Favorite {
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 
   @@id([userId, recipeId])
+}
+
+// ─── Amigos ─────────────────────────────────────────────────────
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+}
+
+model Friendship {
+  id          String           @id @default(cuid())
+  requesterId String
+  addresseeId String
+  status      FriendshipStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  requester User @relation("SentFriendships", fields: [requesterId], references: [id], onDelete: Cascade)
+  addressee User @relation("ReceivedFriendships", fields: [addresseeId], references: [id], onDelete: Cascade)
+
+  @@unique([requesterId, addresseeId])
+  @@index([addresseeId])
+}
+
+// ─── El Duelo (a dos, extensible a N) ───────────────────────────
+
+enum DuelStatus {
+  WAITING // esperando a que los invitados acepten
+  ACTIVE // en juego
+  FINISHED
+  CANCELLED
+}
+
+model DuelSession {
+  id            String     @id @default(cuid())
+  hostId        String
+  status        DuelStatus @default(WAITING)
+  mealType      MealType?
+  candidateIds  String[] // recetas aún en liza
+  eliminatedIds String[] // vetadas, en orden
+  turnUserId    String? // a quién le toca vetar
+  winnerId      String? // receta campeona
+  version       Int        @default(0) // para detectar cambios en el stream SSE
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  host         User              @relation("HostedDuels", fields: [hostId], references: [id], onDelete: Cascade)
+  participants DuelParticipant[]
+
+  @@index([hostId, status])
+}
+
+model DuelParticipant {
+  id        String  @id @default(cuid())
+  sessionId String
+  userId    String
+  order     Int // orden de turno (0, 1, ... N)
+  accepted  Boolean @default(false)
+
+  session DuelSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation("DuelParticipations", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@index([userId])
 }

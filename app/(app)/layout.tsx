@@ -2,12 +2,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LogoutButton } from "@/components/logout-button";
-import { CalendarDays, ShoppingCart, Swords, Sparkles } from "lucide-react";
+import { CalendarDays, ShoppingCart, Swords, Sparkles, Users } from "lucide-react";
 
 const NAV = [
   { href: "/semana", label: "Semana", icon: CalendarDays },
   { href: "/compra", label: "Compra", icon: ShoppingCart },
   { href: "/duelo", label: "El Duelo", icon: Swords },
+  { href: "/amigos", label: "Amigos", icon: Users },
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
