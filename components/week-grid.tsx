@@ -108,7 +108,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
 
       <div className="space-y-3">
         {DAYS_ES.map((dayName, day) => (
-          <div key={day} className="rounded-2xl border border-ink/5 bg-white p-4">
+          <div key={day} className="rounded-2xl border border-ink/5 bg-card p-4">
             <h2 className="mb-3 text-sm font-semibold text-ink">{dayName}</h2>
             <div className="grid grid-cols-2 gap-3">
               {MEALS.map((meal) => {
@@ -154,7 +154,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
       <Dialog.Root open={!!openSlot} onOpenChange={(o) => !o && setOpenSlot(null)}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm" />
-          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-t-3xl bg-white p-6 shadow-xl">
+          <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-t-3xl bg-card p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
               <Dialog.Title className="text-lg font-bold text-ink">
                 Elige una receta

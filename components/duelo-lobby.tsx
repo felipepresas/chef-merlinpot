@@ -28,13 +28,13 @@ export function DueloLobby() {
       <div className="mb-6 flex items-center gap-2 rounded-xl bg-ink/5 p-1">
         <button
           onClick={() => setMode("solo")}
-          className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${mode === "solo" ? "bg-white text-ink shadow-sm" : "text-ink/50"}`}
+          className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${mode === "solo" ? "bg-card text-ink shadow-sm" : "text-ink/50"}`}
         >
           Solo
         </button>
         <button
           onClick={() => setMode("duo")}
-          className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${mode === "duo" ? "bg-white text-ink shadow-sm" : "text-ink/50"}`}
+          className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${mode === "duo" ? "bg-card text-ink shadow-sm" : "text-ink/50"}`}
         >
           A dos
         </button>
@@ -88,7 +88,7 @@ function DuoLobby() {
               <li key={d.id}>
                 <Link
                   href={`/duelo/${d.id}`}
-                  className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-4 transition hover:border-brand"
+                  className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-card p-4 transition hover:border-brand"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand">
                     <Swords className="h-5 w-5" />
@@ -126,7 +126,7 @@ function DuoLobby() {
             <button
               key={m.value}
               onClick={() => setMeal(m.value)}
-              className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition ${meal === m.value ? "bg-white text-ink shadow-sm" : "text-ink/50"}`}
+              className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition ${meal === m.value ? "bg-card text-ink shadow-sm" : "text-ink/50"}`}
             >
               {m.label}
             </button>
@@ -152,7 +152,7 @@ function DuoLobby() {
                 <button
                   onClick={() => challenge(f.userId)}
                   disabled={creating}
-                  className="flex w-full items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3 text-left transition hover:border-brand disabled:opacity-60"
+                  className="flex w-full items-center gap-3 rounded-2xl border border-ink/5 bg-card p-3 text-left transition hover:border-brand disabled:opacity-60"
                 >
                   <Avatar name={f.name} email={f.email} />
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{f.name ?? f.email}</span>

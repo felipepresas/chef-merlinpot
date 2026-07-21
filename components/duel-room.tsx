@@ -189,7 +189,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
           <span className="flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
             <Sparkles className="h-4 w-4" /> Habéis decidido
           </span>
-          <div className="mt-6 w-full max-w-sm rounded-3xl border border-brand/20 bg-white p-8 shadow-sm">
+          <div className="mt-6 w-full max-w-sm rounded-3xl border border-brand/20 bg-card p-8 shadow-sm">
             <Trophy className="mx-auto h-10 w-10 text-paprika" />
             <h2 className="mt-4 text-2xl font-bold text-ink">{state.winner.title}</h2>
             <p className="mt-1 text-sm text-ink/50">
@@ -206,7 +206,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
             </button>
             <Link
               href={`/recetas/${state.winner.slug}`}
-              className="rounded-xl border border-ink/10 bg-white px-4 py-3 text-center font-medium text-ink hover:border-brand"
+              className="rounded-xl border border-ink/10 bg-card px-4 py-3 text-center font-medium text-ink hover:border-brand"
             >
               Ver receta
             </Link>
@@ -216,7 +216,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
         <Dialog.Root open={assignOpen} onOpenChange={setAssignOpen}>
           <Dialog.Portal>
             <Dialog.Overlay className="fixed inset-0 z-40 bg-ink/40 backdrop-blur-sm" />
-            <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-t-3xl bg-white p-6 text-left shadow-xl">
+            <Dialog.Content className="fixed inset-x-0 bottom-0 z-50 mx-auto max-h-[75dvh] max-w-2xl overflow-y-auto rounded-t-3xl bg-card p-6 text-left shadow-xl">
               <div className="mb-4 flex items-center justify-between">
                 <Dialog.Title className="text-lg font-bold text-ink">¿En qué hueco?</Dialog.Title>
                 <Dialog.Close className="text-ink/40 hover:text-ink">
@@ -271,7 +271,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
             key={r.id}
             disabled={!state.myTurn || pending}
             onClick={() => run({ action: "veto", recipeId: r.id })}
-            className="group flex w-full items-center justify-between rounded-2xl border-2 border-ink/5 bg-white p-5 text-left transition enabled:hover:border-paprika disabled:opacity-70"
+            className="group flex w-full items-center justify-between rounded-2xl border-2 border-ink/5 bg-card p-5 text-left transition enabled:hover:border-paprika disabled:opacity-70"
           >
             <span>
               <span className="block font-bold text-ink">{r.title}</span>

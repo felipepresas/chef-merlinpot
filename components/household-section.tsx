@@ -85,7 +85,7 @@ export function HouseholdSection() {
       ))}
 
       {/* tu hogar */}
-      <div className="rounded-2xl border border-ink/5 bg-white p-4">
+      <div className="rounded-2xl border border-ink/5 bg-card p-4">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="inline-flex items-center gap-2 text-sm font-semibold text-ink">
             <Home className="h-4 w-4 text-brand" /> Tu hogar

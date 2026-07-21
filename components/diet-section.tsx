@@ -37,7 +37,7 @@ export function DietSection() {
     save.mutate(current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag]);
 
   return (
-    <section className="rounded-2xl border border-ink/5 bg-white p-4">
+    <section className="rounded-2xl border border-ink/5 bg-card p-4">
       <h2 className="mb-1 inline-flex items-center gap-2 text-sm font-semibold text-ink">
         <Salad className="h-4 w-4 text-herb" /> Tu dieta
       </h2>

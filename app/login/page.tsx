@@ -95,7 +95,7 @@ export default function LoginPage() {
           placeholder="tu@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-ink outline-none focus:border-brand"
+          className="w-full rounded-xl border border-ink/10 bg-card px-4 py-3 text-ink outline-none focus:border-brand"
         />
         <input
           type="password"
@@ -104,7 +104,7 @@ export default function LoginPage() {
           placeholder="Contraseña"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-ink outline-none focus:border-brand"
+          className="w-full rounded-xl border border-ink/10 bg-card px-4 py-3 text-ink outline-none focus:border-brand"
         />
         <button
           type="submit"

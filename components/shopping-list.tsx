@@ -63,7 +63,7 @@ export function ShoppingList({ aisles }: { aisles: ShoppingAisle[] }) {
             <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">
               {aisle.aisle}
             </h2>
-            <ul className="divide-y divide-ink/5 overflow-hidden rounded-2xl border border-ink/5 bg-white">
+            <ul className="divide-y divide-ink/5 overflow-hidden rounded-2xl border border-ink/5 bg-card">
               {aisle.items.map((item) => {
                 const checked = checkedIds.has(item.id);
                 return (

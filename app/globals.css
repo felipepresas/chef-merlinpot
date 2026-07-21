@@ -7,7 +7,8 @@
   --color-brand-600: #6d28d9;
   --color-brand-700: #5b21b6;
   --color-paprika: #ea580c; /* acento comida */
-  --color-cream: #faf7f2; /* fondo cálido */
+  --color-cream: #faf7f2; /* fondo cálido (lienzo) */
+  --color-card: #ffffff; /* superficie elevada (tarjetas, inputs) */
   --color-ink: #1c1917; /* texto */
   --color-herb: #16a34a; /* éxito / comprado */
 
@@ -16,6 +17,21 @@
 
 :root {
   color-scheme: light;
+}
+
+/* Modo oscuro: seguimos la preferencia del sistema. Como el texto, los bordes
+   y los iconos usan `ink` con opacidad, basta voltear ink/cream/card (+ aclarar
+   el púrpura para que los enlaces contrasten sobre fondo oscuro). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --color-cream: #17130f; /* lienzo oscuro cálido */
+    --color-card: #221c16; /* superficie elevada */
+    --color-ink: #f2eee8; /* texto claro cálido */
+    --color-brand: #8b5cf6;
+    --color-brand-600: #8b5cf6;
+    --color-brand-700: #7c3aed;
+  }
 }
 
 body {

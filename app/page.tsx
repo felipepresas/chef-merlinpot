@@ -58,7 +58,7 @@ export default async function Home() {
         {features.map(({ icon: Icon, title, body }) => (
           <div
             key={title}
-            className="rounded-2xl border border-ink/5 bg-white p-5 text-left shadow-sm"
+            className="rounded-2xl border border-ink/5 bg-card p-5 text-left shadow-sm"
           >
             <Icon className="h-6 w-6 text-paprika" />
             <h2 className="mt-3 font-semibold text-ink">{title}</h2>

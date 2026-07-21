@@ -98,7 +98,7 @@ export function FriendsManager() {
           placeholder="email de tu amigo/a"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="min-w-0 flex-1 rounded-xl border border-ink/10 bg-white px-4 py-3 text-ink outline-none focus:border-brand"
+          className="min-w-0 flex-1 rounded-xl border border-ink/10 bg-card px-4 py-3 text-ink outline-none focus:border-brand"
         />
         <button
           type="submit"
@@ -122,7 +122,7 @@ export function FriendsManager() {
           <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">Solicitudes</h2>
           <ul className="space-y-2">
             {d.incoming.map((r) => (
-              <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3">
+              <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-card p-3">
                 <Avatar name={r.name} email={r.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{r.name ?? r.email}</p>
@@ -160,7 +160,7 @@ export function FriendsManager() {
         ) : (
           <ul className="space-y-2">
             {d?.friends.map((f) => (
-              <li key={f.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3">
+              <li key={f.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-card p-3">
                 <Avatar name={f.name} email={f.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{f.name ?? f.email}</p>
@@ -192,7 +192,7 @@ export function FriendsManager() {
           <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink/40">Pendientes de aceptar</h2>
           <ul className="space-y-2">
             {d.outgoing.map((r) => (
-              <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3 opacity-70">
+              <li key={r.friendshipId} className="flex items-center gap-3 rounded-2xl border border-ink/5 bg-card p-3 opacity-70">
                 <Avatar name={r.name} email={r.email} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-ink">{r.name ?? r.email}</p>

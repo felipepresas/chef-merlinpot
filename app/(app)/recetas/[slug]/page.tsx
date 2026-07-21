@@ -51,7 +51,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         {recipe.ingredients.length === 0 ? (
           <p className="text-sm text-ink/50">Esta receta aún no tiene ingredientes.</p>
         ) : (
-        <ul className="divide-y divide-ink/5 rounded-2xl border border-ink/5 bg-white">
+        <ul className="divide-y divide-ink/5 rounded-2xl border border-ink/5 bg-card">
           {recipe.ingredients.map((ri) => (
             <li key={ri.id} className="flex items-center justify-between px-4 py-3 text-sm">
               <span className="text-ink">{ri.ingredient.name}</span>
@@ -69,7 +69,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         ) : (
         <ol className="space-y-3">
           {steps.map((step, i) => (
-            <li key={i} className="flex gap-3 rounded-2xl border border-ink/5 bg-white p-4">
+            <li key={i} className="flex gap-3 rounded-2xl border border-ink/5 bg-card p-4">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-sm font-semibold text-brand">
                 {i + 1}
               </span>
