@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#6D28D9"/>
+  <!-- vapor / chispa mágica -->
+  <path d="M355 150 l12 30 30 12 -30 12 -12 30 -12 -30 -30 -12 30 -12 z" fill="#EA580C"/>
+  <circle cx="300" cy="120" r="9" fill="#FAF7F2" opacity="0.9"/>
+  <circle cx="392" cy="205" r="7" fill="#FAF7F2" opacity="0.85"/>
+  <!-- tapa -->
+  <rect x="238" y="196" width="36" height="22" rx="11" fill="#FAF7F2"/>
+  <rect x="150" y="218" width="212" height="30" rx="15" fill="#FAF7F2"/>
+  <!-- asas -->
+  <rect x="132" y="266" width="20" height="46" rx="10" fill="#FAF7F2"/>
+  <rect x="360" y="266" width="20" height="46" rx="10" fill="#FAF7F2"/>
+  <!-- cuerpo de la olla -->
+  <path d="M162 256 h188 v56 a44 44 0 0 1 -44 44 h-100 a44 44 0 0 1 -44 -44 z" fill="#FAF7F2"/>
+</svg>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 
 export const metadata: Metadata = {
   title: {
@@ -11,6 +12,11 @@ export const metadata: Metadata = {
     "El planificador mágico de comidas de la semana: almuerzos y cenas, recetas con vídeo, lista de la compra y El Duelo para decidir cuando no sabes qué comer.",
   applicationName: "Chef",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  icons: {
+    icon: [{ url: "/favicon-32.png", sizes: "32x32", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180" }],
+  },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Chef" },
 };
 
 export const viewport: Viewport = {
@@ -26,6 +32,7 @@ export default function RootLayout({
     <html lang="es">
       <body>
         <Providers>{children}</Providers>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
