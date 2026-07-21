@@ -18,9 +18,10 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
   const [openSlot, setOpenSlot] = useState<Slot | null>(null);
 
   const recipes = useQuery<Recipe[]>({
-    queryKey: ["recipes"],
+    queryKey: ["recipes", openSlot?.mealType],
+    enabled: !!openSlot,
     queryFn: async () => {
-      const res = await fetch("/api/recetas");
+      const res = await fetch(`/api/recetas?meal=${openSlot!.mealType}`);
       if (!res.ok) throw new Error();
       return res.json();
     },

@@ -1,9 +1,11 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import type { MealType } from "@prisma/client";
 
-/** Catálogo de recetas para el selector del plan. */
-export async function getRecipes() {
+/** Catálogo de recetas para el selector del plan (filtrable por tipo de comida). */
+export async function getRecipes(mealType?: MealType) {
   return prisma.recipe.findMany({
+    where: mealType ? { mealType } : undefined,
     orderBy: { title: "asc" },
     select: {
       id: true,
