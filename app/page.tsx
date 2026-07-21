@@ -1,4 +1,7 @@
-import { CalendarDays, ShoppingCart, Sparkles, Video } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth/session";
+import { ArrowRight, CalendarDays, ShoppingCart, Sparkles, Video } from "lucide-react";
 
 const features = [
   {
@@ -23,7 +26,10 @@ const features = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+  if (user) redirect("/semana");
+
   return (
     <main className="mx-auto flex min-h-dvh max-w-2xl flex-col items-center px-6 py-16 text-center">
       <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
@@ -37,6 +43,16 @@ export default function Home() {
       <p className="mt-2 max-w-md text-ink/60">
         El planificador mágico de comidas de la semana.
       </p>
+
+      <Link
+        href="/login"
+        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-700"
+      >
+        Empezar <ArrowRight className="h-4 w-4" />
+      </Link>
+      <Link href="/login" className="mt-3 text-sm text-ink/50 hover:text-brand">
+        Ya tengo cuenta
+      </Link>
 
       <div className="mt-12 grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
         {features.map(({ icon: Icon, title, body }) => (
@@ -52,7 +68,7 @@ export default function Home() {
       </div>
 
       <p className="mt-16 text-sm text-ink/40">
-        En construcción · chef.merlinpot.com
+        chef.merlinpot.com · by merlinpot
       </p>
     </main>
   );

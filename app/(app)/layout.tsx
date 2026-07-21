@@ -2,14 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth/session";
 import { LogoutButton } from "@/components/logout-button";
-import { CalendarDays, ShoppingCart, Swords, Sparkles, Users } from "lucide-react";
-
-const NAV = [
-  { href: "/semana", label: "Semana", icon: CalendarDays },
-  { href: "/compra", label: "Compra", icon: ShoppingCart },
-  { href: "/duelo", label: "El Duelo", icon: Swords },
-  { href: "/amigos", label: "Amigos", icon: Users },
-];
+import { AppNav } from "@/components/app-nav";
+import { Sparkles } from "lucide-react";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -29,18 +23,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
       <main className="flex-1 px-6 pb-24">{children}</main>
 
-      <nav className="fixed inset-x-0 bottom-0 mx-auto flex max-w-2xl items-center justify-around border-t border-ink/5 bg-cream/90 px-6 py-3 backdrop-blur">
-        {NAV.map(({ href, label, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex flex-col items-center gap-1 text-xs text-ink/60 hover:text-brand"
-          >
-            <Icon className="h-5 w-5" />
-            {label}
-          </Link>
-        ))}
-      </nav>
+      <AppNav />
     </div>
   );
 }

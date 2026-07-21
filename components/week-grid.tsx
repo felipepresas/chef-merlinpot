@@ -65,12 +65,24 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
   });
 
   const emptyCount = slots.filter((s) => !s.recipe).length;
+  const allEmpty = slots.length > 0 && emptyCount === slots.length;
 
   const slotFor = (day: number, meal: MealType) =>
     slots.find((s) => s.dayOfWeek === day && s.mealType === meal);
 
   return (
     <>
+      {allEmpty && (
+        <div className="mb-4 rounded-2xl border border-brand/15 bg-brand/5 p-5 text-center">
+          <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-brand/10 text-brand">
+            <Sparkles className="h-5 w-5" />
+          </span>
+          <h2 className="mt-3 font-semibold text-ink">Tu semana está en blanco</h2>
+          <p className="mx-auto mt-1 max-w-xs text-sm text-ink/60">
+            Deja que el mago la llene por ti, o añade tú los platos uno a uno.
+          </p>
+        </div>
+      )}
       <button
         onClick={() => fill.mutate()}
         disabled={fill.isPending || emptyCount === 0}
