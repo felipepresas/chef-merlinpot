@@ -7,6 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Sparkles, Users, Swords, ChevronRight, Loader2, Hourglass, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { DueloGame } from "@/components/duelo-game";
+import { Avatar } from "@/components/ui/avatar";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { FriendData } from "@/lib/friends";
 import type { MealType } from "@prisma/client";
 
@@ -138,13 +140,11 @@ function DuoLobby() {
         )}
 
         {friends.data && friends.data.friends.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-ink/10 p-8 text-center text-ink/50">
-            <Users className="h-7 w-7 text-brand" />
-            <p className="text-sm">Necesitas amigos para jugar a dos.</p>
-            <Link href="/amigos" className="inline-flex items-center gap-1 text-sm font-medium text-brand hover:underline">
+          <EmptyState icon={Users} title="Necesitas amigos para jugar a dos.">
+            <Link href="/amigos" className="inline-flex items-center gap-1 font-medium text-brand hover:underline">
               <UserPlus className="h-4 w-4" /> Añadir amigos
             </Link>
-          </div>
+          </EmptyState>
         ) : (
           <ul className="space-y-2">
             {friends.data?.friends.map((f) => (
@@ -154,9 +154,7 @@ function DuoLobby() {
                   disabled={creating}
                   className="flex w-full items-center gap-3 rounded-2xl border border-ink/5 bg-white p-3 text-left transition hover:border-brand disabled:opacity-60"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 font-semibold text-brand">
-                    {(f.name?.[0] ?? f.email[0]).toUpperCase()}
-                  </span>
+                  <Avatar name={f.name} email={f.email} />
                   <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{f.name ?? f.email}</span>
                   <span className="inline-flex items-center gap-1 text-sm font-medium text-brand">
                     <Swords className="h-4 w-4" /> Retar

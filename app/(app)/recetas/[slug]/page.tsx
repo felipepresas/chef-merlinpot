@@ -48,6 +48,9 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
 
       <section className="mt-8">
         <h2 className="mb-3 text-lg font-bold text-ink">Ingredientes</h2>
+        {recipe.ingredients.length === 0 ? (
+          <p className="text-sm text-ink/50">Esta receta aún no tiene ingredientes.</p>
+        ) : (
         <ul className="divide-y divide-ink/5 rounded-2xl border border-ink/5 bg-white">
           {recipe.ingredients.map((ri) => (
             <li key={ri.id} className="flex items-center justify-between px-4 py-3 text-sm">
@@ -56,10 +59,14 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
             </li>
           ))}
         </ul>
+        )}
       </section>
 
       <section className="mt-8">
         <h2 className="mb-3 text-lg font-bold text-ink">Preparación</h2>
+        {steps.length === 0 ? (
+          <p className="text-sm text-ink/50">Los pasos de esta receta llegarán pronto.</p>
+        ) : (
         <ol className="space-y-3">
           {steps.map((step, i) => (
             <li key={i} className="flex gap-3 rounded-2xl border border-ink/5 bg-white p-4">
@@ -77,6 +84,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
             </li>
           ))}
         </ol>
+        )}
       </section>
     </div>
   );
