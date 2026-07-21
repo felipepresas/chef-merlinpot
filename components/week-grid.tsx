@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Plus, X, Clock, Loader2, UtensilsCrossed } from "lucide-react";
+import { Plus, X, Clock, Loader2, UtensilsCrossed, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
 import type { MealType } from "@prisma/client";
@@ -46,11 +46,46 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
     onError: () => toast.error("No se pudo guardar el cambio."),
   });
 
+  const fill = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/plan/fill", { method: "POST" });
+      if (!res.ok) throw new Error();
+      return (await res.json()) as { filled: { slotId: string; recipe: SlotRecipe }[] };
+    },
+    onSuccess: (data) => {
+      const byId = new Map(data.filled.map((f) => [f.slotId, f.recipe]));
+      setSlots((prev) => prev.map((s) => (byId.has(s.slotId) ? { ...s, recipe: byId.get(s.slotId)! } : s)));
+      if (data.filled.length === 0) {
+        toast.info("No quedan huecos por rellenar (o no hay recetas para tu dieta).");
+      } else {
+        toast.success(`✨ Rellené ${data.filled.length} ${data.filled.length === 1 ? "hueco" : "huecos"}.`);
+      }
+    },
+    onError: () => toast.error("No se pudo rellenar la semana."),
+  });
+
+  const emptyCount = slots.filter((s) => !s.recipe).length;
+
   const slotFor = (day: number, meal: MealType) =>
     slots.find((s) => s.dayOfWeek === day && s.mealType === meal);
 
   return (
     <>
+      <button
+        onClick={() => fill.mutate()}
+        disabled={fill.isPending || emptyCount === 0}
+        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {fill.isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Sparkles className="h-4 w-4" />
+        )}
+        {emptyCount === 0
+          ? "Semana completa"
+          : `Rellena mi semana${emptyCount < slots.length ? ` (${emptyCount})` : ""}`}
+      </button>
+
       <div className="space-y-3">
         {DAYS_ES.map((dayName, day) => (
           <div key={day} className="rounded-2xl border border-ink/5 bg-white p-4">
