@@ -12,7 +12,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col">
       <header className="flex items-center justify-between px-6 py-4">
-        <Link href="/semana" className="inline-flex items-center gap-2 font-bold text-ink">
+        <Link href="/semana" className="inline-flex items-center gap-2 font-display text-xl font-semibold text-ink">
           <Sparkles className="h-5 w-5 text-brand" /> Chef
         </Link>
         <div className="flex items-center gap-3">
