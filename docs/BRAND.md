@@ -139,9 +139,17 @@ el púrpura para que los enlaces contrasten sobre fondo oscuro:
 
 ## 6. Logo / marca gráfica
 
-Concepto: una **olla** de la que sale vapor en forma de **estrellas/chispas** mágicas, o
-donde la tapa insinúa un **gorro de mago**. La versión reducida (favicon/app icon) es la
-olla con una chispa. Pendiente de diseño; este documento fija la dirección, no el arte final.
+Concepto: una **olla** crema con una **chispa mágica** (estrella de 4 puntas en páprika) de
+la que cae una **gota** dentro de la olla — la magia entrando en la cocina. Sobre fondo con
+degradado de marca (violet 600→900).
+
+**Arte definido** (`public/icon.svg` + `public/icon-maskable.svg`):
+- `icon.svg` — versión "any": fondo redondeado (rx 112) + arte al 1,3×.
+- `icon-maskable.svg` — versión maskable: fondo a sangre + arte al 1,12× (dentro de la zona
+  segura del 80% para que Android/iOS no lo recorten).
+- PNG derivados: `icon-192/512`, `icon-maskable-512`, `apple-icon` (180, usa la maskable a
+  sangre porque iOS la enmascara) y `favicon-32`. Se regeneran con `sharp` (instalado
+  `--no-save`, **no** en package.json para no cargar el build de Docker).
 
 ## 7. Iconografía
 
