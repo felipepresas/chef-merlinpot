@@ -82,7 +82,7 @@ export default function LoginPage() {
         <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
           <Sparkles className="h-4 w-4" /> Chef
         </span>
-        <h1 className="mt-6 text-2xl font-bold text-ink">
+        <h1 className="mt-6 font-display text-3xl font-semibold text-ink">
           {mode === "login" ? "Entra a tu cocina" : "Crea tu cuenta"}
         </h1>
         <p className="mt-1 text-sm text-ink/60">Tu semana, servida.</p>

@@ -19,7 +19,7 @@ export default function Error({
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-danger/10 text-danger">
         <AlertTriangle className="h-7 w-7" />
       </span>
-      <h1 className="mt-6 text-2xl font-bold text-ink">Algo se nos quemó</h1>
+      <h1 className="mt-6 font-display text-2xl font-semibold text-ink">Algo se nos quemó</h1>
       <p className="mt-2 text-sm text-ink/60">
         Ha ocurrido un error inesperado. Vuelve a intentarlo.
       </p>

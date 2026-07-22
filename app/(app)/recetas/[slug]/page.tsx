@@ -23,7 +23,7 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         <ArrowLeft className="h-4 w-4" /> Volver
       </Link>
 
-      <h1 className="text-2xl font-bold text-ink">{recipe.title}</h1>
+      <h1 className="font-display text-2xl font-semibold text-ink">{recipe.title}</h1>
       {recipe.description && <p className="mt-1 text-ink/60">{recipe.description}</p>}
 
       <div className="mt-3 flex flex-wrap gap-4 text-sm text-ink/60">

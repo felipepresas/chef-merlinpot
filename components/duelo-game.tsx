@@ -138,7 +138,7 @@ export function DueloGame() {
         <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand/10 text-brand">
           <Sparkles className="h-8 w-8" />
         </span>
-        <h1 className="mt-6 text-2xl font-bold text-ink">El Duelo</h1>
+        <h1 className="mt-6 font-display text-3xl font-semibold text-ink">El Duelo</h1>
         <p className="mt-2 max-w-xs text-ink/60">
           ¿No sabes qué comer? Enfrenta los platos y deja que el mago elija por ti.
         </p>
@@ -202,7 +202,7 @@ export function DueloGame() {
               <Trophy className="h-8 w-8" />
             </span>
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-brand">Campeón</p>
-            <h2 className="mt-1 text-2xl font-bold text-ink">{champion.title}</h2>
+            <h2 className="mt-1 font-display text-2xl font-semibold text-ink">{champion.title}</h2>
             <p className="mt-1 text-sm text-ink/50">
               {champion.cuisine}
               {champion.cookTimeMin != null && ` · ${champion.cookTimeMin} min`}
@@ -300,7 +300,7 @@ export function DueloGame() {
             ))}
           </div>
         )}
-        <h1 className="mt-3 text-xl font-bold text-ink">¿Cuál te apetece más?</h1>
+        <h1 className="mt-3 font-display text-2xl font-semibold text-ink">¿Cuál te apetece más?</h1>
         <p className="mt-1 text-sm text-ink/50">Quedan {remaining} platos en liza</p>
       </div>
 

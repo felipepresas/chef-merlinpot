@@ -25,7 +25,7 @@ export default async function SemanaPage() {
   return (
     <div>
       <div className="py-4">
-        <h1 className="text-2xl font-bold text-ink">Tu semana</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink">Tu semana</h1>
         <p className="text-sm text-ink/60">
           Del {monday.getUTCDate()}/{monday.getUTCMonth() + 1} · almuerzos y cenas
         </p>

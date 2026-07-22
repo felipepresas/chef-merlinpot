@@ -191,7 +191,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
           </span>
           <div className="mt-6 w-full max-w-sm rounded-3xl border border-brand/20 bg-card p-8 shadow-sm">
             <Trophy className="mx-auto h-10 w-10 text-paprika" />
-            <h2 className="mt-4 text-2xl font-bold text-ink">{state.winner.title}</h2>
+            <h2 className="mt-4 font-display text-2xl font-semibold text-ink">{state.winner.title}</h2>
             <p className="mt-1 text-sm text-ink/50">
               {state.winner.cuisine}
               {state.winner.cookTimeMin != null && ` · ${state.winner.cookTimeMin} min`}

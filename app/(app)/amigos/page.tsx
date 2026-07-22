@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default function AmigosPage() {
   return (
     <div className="py-4">
-      <h1 className="text-2xl font-bold text-ink">Amigos y hogar</h1>
+      <h1 className="font-display text-2xl font-semibold text-ink">Amigos y hogar</h1>
       <p className="mb-6 text-sm text-ink/60">
         Comparte el plan y la compra con quien vive contigo, o rétale en El Duelo.
       </p>

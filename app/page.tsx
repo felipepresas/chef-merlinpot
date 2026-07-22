@@ -36,10 +36,10 @@ export default async function Home() {
         <Sparkles className="h-4 w-4" /> by merlinpot
       </span>
 
-      <h1 className="mt-8 text-5xl font-bold tracking-tight text-ink">
+      <h1 className="mt-8 font-display text-6xl font-semibold tracking-tight text-ink">
         Chef
       </h1>
-      <p className="mt-4 text-xl text-ink/70">Tu semana, servida.</p>
+      <p className="mt-4 font-display text-xl italic text-ink/70">Tu semana, servida.</p>
       <p className="mt-2 max-w-md text-ink/60">
         El planificador mágico de comidas de la semana.
       </p>

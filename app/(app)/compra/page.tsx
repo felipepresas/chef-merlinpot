@@ -17,7 +17,7 @@ export default async function CompraPage() {
 
   return (
     <div className="py-4">
-      <h1 className="text-2xl font-bold text-ink">Lista de la compra</h1>
+      <h1 className="font-display text-2xl font-semibold text-ink">Lista de la compra</h1>
       <p className="mb-4 text-sm text-ink/60">De las recetas de tu semana, por pasillos.</p>
 
       {isEmpty ? (
