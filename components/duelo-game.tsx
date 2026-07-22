@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Sparkles, Clock, Trophy, RotateCcw, CalendarPlus, X, Loader2, Check } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { Sparkles, Clock, Trophy, RotateCcw, CalendarPlus, X, Loader2, Check, Swords } from "lucide-react";
 import { toast } from "sonner";
 import { DAYS_ES, MEAL_LABEL } from "@/lib/plan-labels";
 import type { MealType } from "@prisma/client";
@@ -21,16 +22,40 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+/** Nombre de la ronda según cuántos platos siguen vivos. */
+function stageName(alive: number): string {
+  if (alive >= 5) return "Cuartos";
+  if (alive >= 3) return "Semifinal";
+  return "Final";
+}
+
+/** Lista de rondas de todo el torneo, según el nº inicial de platos. */
+function stagesFor(n: number): string[] {
+  const s: string[] = [];
+  if (n >= 5) s.push("Cuartos");
+  if (n >= 3) s.push("Semifinal");
+  s.push("Final");
+  return s;
+}
+
 export function DueloGame() {
+  const reduce = useReducedMotion();
   const [phase, setPhase] = useState<"setup" | "playing">("setup");
   const [round, setRound] = useState<Recipe[]>([]);
   const [winners, setWinners] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [initialCount, setInitialCount] = useState(0);
+  // camino del ganador: para cada plato, a quién ha vencido
+  const [beaten, setBeaten] = useState<Record<string, string[]>>({});
 
   const champion = phase === "playing" && round.length === 1 && winners.length === 0 ? round[0] : null;
   const pair = round.length >= 2 ? ([round[0], round[1]] as const) : null;
   const remaining = round.length + winners.length;
+  const stages = stagesFor(initialCount);
+  const curStage = stageName(remaining);
+  const curStageIdx = stages.indexOf(curStage);
+  const championPath = champion ? (beaten[champion.id] ?? []) : [];
 
   async function start(meal?: MealType) {
     setLoading(true);
@@ -41,8 +66,11 @@ export function DueloGame() {
         toast.error("Necesitas al menos 2 recetas para El Duelo.");
         return;
       }
-      setRound(shuffle(recipes).slice(0, 8));
+      const picked = shuffle(recipes).slice(0, 8);
+      setRound(picked);
       setWinners([]);
+      setBeaten({});
+      setInitialCount(picked.length);
       setPhase("playing");
     } finally {
       setLoading(false);
@@ -50,6 +78,9 @@ export function DueloGame() {
   }
 
   function choose(winner: Recipe) {
+    const loser = round[0].id === winner.id ? round[1] : round[0];
+    setBeaten((b) => ({ ...b, [winner.id]: [...(b[winner.id] ?? []), loser.title] }));
+
     const rest = round.slice(2);
     let nextWinners = [...winners, winner];
     let nextRound = rest;
@@ -75,6 +106,8 @@ export function DueloGame() {
     setPhase("setup");
     setRound([]);
     setWinners([]);
+    setBeaten({});
+    setInitialCount(0);
   }
 
   const slots = useQuery<Slot[]>({
@@ -141,17 +174,47 @@ export function DueloGame() {
   if (champion) {
     return (
       <div className="flex flex-col items-center py-8 text-center">
-        <span className="flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
+        <motion.span
+          initial={reduce ? false : { opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand"
+        >
           <Sparkles className="h-4 w-4" /> El mago ha elegido
-        </span>
-        <div className="mt-6 w-full max-w-sm rounded-3xl border border-brand/20 bg-card p-8 shadow-sm">
-          <Trophy className="mx-auto h-10 w-10 text-paprika" />
-          <h2 className="mt-4 text-2xl font-bold text-ink">{champion.title}</h2>
-          <p className="mt-1 text-sm text-ink/50">
-            {champion.cuisine}
-            {champion.cookTimeMin != null && ` · ${champion.cookTimeMin} min`}
-          </p>
-        </div>
+        </motion.span>
+
+        <motion.div
+          initial={reduce ? false : { opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.05 }}
+          className="relative mt-6 w-full max-w-sm"
+        >
+          {/* resplandor pulsante detrás de la tarjeta */}
+          {!reduce && (
+            <motion.div
+              aria-hidden
+              className="absolute -inset-3 rounded-4xl bg-brand/30 blur-2xl"
+              animate={{ opacity: [0.35, 0.7, 0.35], scale: [0.98, 1.02, 0.98] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+            />
+          )}
+          <div className="relative overflow-hidden rounded-3xl border-2 border-brand/30 bg-linear-to-b from-brand/10 to-card p-8 shadow-2xl shadow-brand/25">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-paprika/15 text-paprika">
+              <Trophy className="h-8 w-8" />
+            </span>
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-brand">Campeón</p>
+            <h2 className="mt-1 text-2xl font-bold text-ink">{champion.title}</h2>
+            <p className="mt-1 text-sm text-ink/50">
+              {champion.cuisine}
+              {champion.cookTimeMin != null && ` · ${champion.cookTimeMin} min`}
+            </p>
+            {championPath.length > 0 && (
+              <p className="mt-4 border-t border-ink/5 pt-3 text-xs text-ink/50">
+                <Swords className="mr-1 inline h-3 w-3 text-ink/30" />
+                Venció a {championPath.join(", ")}
+              </p>
+            )}
+          </div>
+        </motion.div>
 
         <div className="mt-6 flex w-full max-w-sm flex-col gap-3">
           <button
@@ -222,38 +285,64 @@ export function DueloGame() {
   return (
     <div className="py-6">
       <div className="mb-6 text-center">
-        <p className="text-sm font-medium text-ink/50">Quedan {remaining} platos en liza</p>
-        <h1 className="mt-1 text-xl font-bold text-ink">¿Cuál te apetece más?</h1>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-brand">
+          <Swords className="h-3.5 w-3.5" /> {curStage}
+        </span>
+        {stages.length > 1 && (
+          <div className="mx-auto mt-3 flex items-center justify-center gap-1.5">
+            {stages.map((s, i) => (
+              <span
+                key={s}
+                className={`h-1.5 rounded-full transition-all ${
+                  i < curStageIdx ? "w-1.5 bg-brand/40" : i === curStageIdx ? "w-6 bg-brand" : "w-1.5 bg-ink/15"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+        <h1 className="mt-3 text-xl font-bold text-ink">¿Cuál te apetece más?</h1>
+        <p className="mt-1 text-sm text-ink/50">Quedan {remaining} platos en liza</p>
       </div>
 
       {pair && (
-        <div className="flex flex-col items-stretch gap-3">
-          {[pair[0], pair[1]].map((r, idx) => (
-            <div key={r.id} className="contents">
-              <button
-                onClick={() => choose(r)}
-                className="group rounded-2xl border-2 border-ink/5 bg-card p-6 text-center transition hover:border-brand hover:shadow-md"
-              >
-                <h2 className="text-lg font-bold text-ink group-hover:text-brand">{r.title}</h2>
-                <p className="mt-1 flex items-center justify-center gap-2 text-sm text-ink/50">
-                  {r.cuisine && <span>{r.cuisine}</span>}
-                  {r.cookTimeMin != null && (
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3 w-3" /> {r.cookTimeMin} min
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${pair[0].id}-${pair[1].id}`}
+            initial={reduce ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduce ? undefined : { opacity: 0, y: -10 }}
+            transition={{ duration: 0.22 }}
+            className="relative flex flex-col items-stretch gap-3"
+          >
+            {[pair[0], pair[1]].map((r, idx) => (
+              <div key={r.id} className="contents">
+                <button
+                  onClick={() => choose(r)}
+                  className="group rounded-2xl border-2 border-ink/10 bg-card p-6 text-center transition hover:border-brand hover:shadow-lg hover:shadow-brand/20"
+                >
+                  <h2 className="text-lg font-bold text-ink group-hover:text-brand">{r.title}</h2>
+                  <p className="mt-1 flex items-center justify-center gap-2 text-sm text-ink/50">
+                    {r.cuisine && <span>{r.cuisine}</span>}
+                    {r.cookTimeMin != null && (
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="h-3 w-3" /> {r.cookTimeMin} min
+                      </span>
+                    )}
+                  </p>
+                </button>
+                {idx === 0 && (
+                  <div className="relative flex items-center justify-center py-1">
+                    <span className="h-px flex-1 bg-ink/10" />
+                    <span className="mx-3 flex h-9 w-9 items-center justify-center rounded-full bg-paprika text-xs font-black uppercase tracking-wide text-white shadow-lg shadow-paprika/40 ring-4 ring-paprika/15">
+                      vs
                     </span>
-                  )}
-                </p>
-              </button>
-              {idx === 0 && (
-                <div className="flex items-center justify-center">
-                  <span className="rounded-full bg-paprika/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-paprika">
-                    vs
-                  </span>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                    <span className="h-px flex-1 bg-ink/10" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
       )}
 
       <button
