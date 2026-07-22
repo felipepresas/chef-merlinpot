@@ -94,7 +94,7 @@ export function HouseholdSection() {
             <button
               onClick={() => leave.mutate()}
               disabled={leave.isPending}
-              className="inline-flex items-center gap-1 text-xs text-ink/50 hover:text-paprika"
+              className="inline-flex items-center gap-1 text-xs text-ink/50 hover:text-danger"
             >
               <LogOut className="h-3.5 w-3.5" /> Salir
             </button>
@@ -123,7 +123,7 @@ export function HouseholdSection() {
             {d?.outgoing.map((o) => (
               <p key={o.inviteId} className="mt-2 inline-flex items-center gap-1 text-xs text-ink/40">
                 <Clock className="h-3 w-3" /> Invitación a {o.to} pendiente
-                <button onClick={() => cancel.mutate(o.inviteId)} className="ml-1 text-ink/30 hover:text-paprika">
+                <button onClick={() => cancel.mutate(o.inviteId)} className="ml-1 text-ink/30 hover:text-danger">
                   <X className="h-3 w-3" />
                 </button>
               </p>

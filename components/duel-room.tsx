@@ -145,7 +145,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
               <p className="text-ink/70">
                 Esperando a que <b>{opponent?.name}</b> acepte el duelo…
               </p>
-              <button onClick={() => run({ action: "cancel" })} disabled={pending} className="mt-2 text-sm text-ink/50 hover:text-paprika">
+              <button onClick={() => run({ action: "cancel" })} disabled={pending} className="mt-2 text-sm text-ink/50 hover:text-danger">
                 Cancelar
               </button>
             </>
@@ -161,7 +161,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
                 <button
                   onClick={() => run({ action: "accept" })}
                   disabled={pending}
-                  className="flex items-center gap-2 rounded-xl bg-brand px-5 py-3 font-medium text-white hover:bg-brand-700 disabled:opacity-60"
+                  className="flex items-center gap-2 rounded-xl bg-brand px-5 py-3 font-medium text-white hover:bg-brand-800 disabled:opacity-60"
                 >
                   <Check className="h-4 w-4" /> Aceptar
                 </button>
@@ -200,7 +200,7 @@ export function DuelRoom({ sessionId }: { sessionId: string }) {
           <div className="mt-6 flex w-full max-w-sm flex-col gap-3">
             <button
               onClick={() => setAssignOpen(true)}
-              className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white hover:bg-brand-700"
+              className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white hover:bg-brand-800"
             >
               <CalendarPlus className="h-4 w-4" /> Añadir a mi semana
             </button>

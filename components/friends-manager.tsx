@@ -103,7 +103,7 @@ export function FriendsManager() {
         <button
           type="submit"
           disabled={add.isPending}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
+          className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800 disabled:opacity-60"
         >
           {add.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
           Añadir
@@ -175,7 +175,7 @@ export function FriendsManager() {
                 </button>
                 <button
                   onClick={() => remove.mutate(f.friendshipId)}
-                  className="text-ink/30 hover:text-paprika"
+                  className="text-ink/30 hover:text-danger"
                   aria-label="Eliminar amigo"
                 >
                   <X className="h-4 w-4" />
@@ -200,7 +200,7 @@ export function FriendsManager() {
                 <span className="inline-flex items-center gap-1 text-xs text-ink/40">
                   <Clock className="h-3 w-3" /> enviada
                 </span>
-                <button onClick={() => remove.mutate(r.friendshipId)} className="text-ink/30 hover:text-paprika" aria-label="Cancelar">
+                <button onClick={() => remove.mutate(r.friendshipId)} className="text-ink/30 hover:text-danger" aria-label="Cancelar">
                   <X className="h-4 w-4" />
                 </button>
               </li>

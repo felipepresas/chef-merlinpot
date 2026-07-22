@@ -1,16 +1,46 @@
 @import "tailwindcss";
 
-/* ─── Tokens de marca Chef (ver docs/BRAND.md) ─────────────────
-   Se exponen como utilidades Tailwind: bg-brand, text-paprika, etc. */
+/* ─── Sistema de color Chef (fuente canónica: docs/BRAND.md) ────────────────
+   Escalas 50–950 ancladas a rampas accesibles. Se exponen como utilidades
+   Tailwind: bg-brand, bg-brand-500, text-paprika, text-danger, bg-cream, etc.
+   Tokens base (brand/paprika/ink/cream/card) + semánticos (herb/danger/warn). */
 @theme {
-  --color-brand: #6d28d9; /* púrpura mago */
-  --color-brand-600: #6d28d9;
-  --color-brand-700: #5b21b6;
-  --color-paprika: #ea580c; /* acento comida */
-  --color-cream: #faf7f2; /* fondo cálido (lienzo) */
+  /* Brand — púrpura mago (violet). Primario = 700. */
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+  --color-brand-200: #ddd6fe;
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+  --color-brand-700: #6d28d9;
+  --color-brand-800: #5b21b6;
+  --color-brand-900: #4c1d95;
+  --color-brand-950: #2e1065;
+  --color-brand: #6d28d9; /* alias del primario */
+
+  /* Paprika — apetito (orange). Acento = 600. */
+  --color-paprika-50: #fff7ed;
+  --color-paprika-100: #ffedd5;
+  --color-paprika-200: #fed7aa;
+  --color-paprika-300: #fdba74;
+  --color-paprika-400: #fb923c;
+  --color-paprika-500: #f97316;
+  --color-paprika-600: #ea580c;
+  --color-paprika-700: #c2410c;
+  --color-paprika-800: #9a3412;
+  --color-paprika-900: #7c2d12;
+  --color-paprika: #ea580c; /* alias del acento */
+
+  /* Neutrales cálidos */
+  --color-cream: #faf7f2; /* lienzo */
   --color-card: #ffffff; /* superficie elevada (tarjetas, inputs) */
-  --color-ink: #1c1917; /* texto */
+  --color-ink: #1c1917; /* texto (se usa con opacidad como escala de grises) */
+
+  /* Semánticos */
   --color-herb: #16a34a; /* éxito / comprado */
+  --color-danger: #dc2626; /* destructivo / error */
+  --color-warn: #f59e0b; /* aviso no bloqueante */
 
   --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
 }
@@ -20,17 +50,18 @@
 }
 
 /* Modo oscuro: seguimos la preferencia del sistema. Como el texto, los bordes
-   y los iconos usan `ink` con opacidad, basta voltear ink/cream/card (+ aclarar
-   el púrpura para que los enlaces contrasten sobre fondo oscuro). */
+   y los iconos usan `ink` con opacidad, basta voltear ink/cream/card, aclarar
+   el púrpura para que contraste, y subir un punto los semánticos. */
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
     --color-cream: #17130f; /* lienzo oscuro cálido */
     --color-card: #221c16; /* superficie elevada */
     --color-ink: #f2eee8; /* texto claro cálido */
-    --color-brand: #8b5cf6;
-    --color-brand-600: #8b5cf6;
-    --color-brand-700: #7c3aed;
+    --color-brand: #8b5cf6; /* primario aclarado */
+    --color-brand-800: #7c3aed; /* estado hover en oscuro */
+    --color-herb: #22c55e;
+    --color-danger: #ef4444;
   }
 }
 

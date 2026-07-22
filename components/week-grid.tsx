@@ -94,7 +94,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
       <button
         onClick={() => fill.mutate()}
         disabled={fill.isPending || emptyCount === 0}
-        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {fill.isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
@@ -130,7 +130,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                         <button
                           aria-label="Quitar"
                           onClick={() => assign.mutate({ slotId: slot.slotId, recipe: null })}
-                          className="shrink-0 text-ink/30 hover:text-paprika"
+                          className="shrink-0 text-ink/30 hover:text-danger"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -138,7 +138,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                     ) : (
                       <button
                         onClick={() => setOpenSlot(slot)}
-                        className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-700"
+                        className="flex items-center gap-1 text-sm font-medium text-brand hover:text-brand-800"
                       >
                         <Plus className="h-4 w-4" /> Añadir
                       </button>

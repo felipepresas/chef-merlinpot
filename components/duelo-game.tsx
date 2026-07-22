@@ -160,7 +160,7 @@ export function DueloGame() {
           <button
             onClick={() => start()}
             disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-700 disabled:opacity-60"
+            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800 disabled:opacity-60"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             Sorpréndeme
@@ -219,7 +219,7 @@ export function DueloGame() {
         <div className="mt-6 flex w-full max-w-sm flex-col gap-3">
           <button
             onClick={() => setAssignOpen(true)}
-            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-700"
+            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800"
           >
             <CalendarPlus className="h-4 w-4" /> Añadir a mi semana
           </button>

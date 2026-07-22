@@ -46,7 +46,7 @@ export default async function Home() {
 
       <Link
         href="/login"
-        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-700"
+        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-800"
       >
         Empezar <ArrowRight className="h-4 w-4" />
       </Link>
