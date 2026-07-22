@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle, RotateCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Error({
   error,
@@ -23,12 +24,9 @@ export default function Error({
       <p className="mt-2 text-sm text-ink/60">
         Ha ocurrido un error inesperado. Vuelve a intentarlo.
       </p>
-      <button
-        onClick={reset}
-        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-800"
-      >
+      <Button onClick={reset} className="mt-8">
         <RotateCw className="h-4 w-4" /> Reintentar
-      </button>
+      </Button>
     </main>
   );
 }

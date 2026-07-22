@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import type { FriendData } from "@/lib/friends";
 import { Avatar } from "@/components/ui/avatar";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
 
 export function FriendsManager() {
   const qc = useQueryClient();
@@ -100,14 +101,10 @@ export function FriendsManager() {
           onChange={(e) => setEmail(e.target.value)}
           className="min-w-0 flex-1 rounded-xl border border-ink/10 bg-card px-4 py-3 text-ink outline-none focus:border-brand"
         />
-        <button
-          type="submit"
-          disabled={add.isPending}
-          className="flex shrink-0 items-center gap-1.5 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800 disabled:opacity-60"
-        >
-          {add.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+        <Button type="submit" loading={add.isPending} className="shrink-0">
+          {!add.isPending && <UserPlus className="h-4 w-4" />}
           Añadir
-        </button>
+        </Button>
       </form>
 
       {data.isLoading && (

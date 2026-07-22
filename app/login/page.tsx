@@ -9,7 +9,9 @@ import {
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { toast } from "sonner";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 /** Traduce el código de error de Firebase Auth a un mensaje claro. */
 function authErrorMessage(code: string | undefined, mode: "login" | "register"): string {
@@ -79,9 +81,9 @@ export default function LoginPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-sm flex-col justify-center px-6 py-16">
       <div className="mb-8 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
+        <Badge className="px-4 py-1.5 text-sm font-medium">
           <Sparkles className="h-4 w-4" /> Chef
-        </span>
+        </Badge>
         <h1 className="mt-6 font-display text-3xl font-semibold text-ink">
           {mode === "login" ? "Entra a tu cocina" : "Crea tu cuenta"}
         </h1>
@@ -106,14 +108,9 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-xl border border-ink/10 bg-card px-4 py-3 text-ink outline-none focus:border-brand"
         />
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800 disabled:opacity-60"
-        >
-          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+        <Button type="submit" fullWidth loading={loading}>
           {mode === "login" ? "Entrar" : "Crear cuenta"}
-        </button>
+        </Button>
       </form>
 
       {mode === "login" && (

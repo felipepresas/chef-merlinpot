@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles, ArrowLeft } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
@@ -11,10 +12,7 @@ export default function NotFound() {
       <p className="mt-2 text-sm text-ink/60">
         La página que buscas no existe o se movió de la cocina.
       </p>
-      <Link
-        href="/semana"
-        className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-800"
-      >
+      <Link href="/semana" className={buttonClass({ className: "mt-8" })}>
         <ArrowLeft className="h-4 w-4" /> Volver a mi semana
       </Link>
     </main>

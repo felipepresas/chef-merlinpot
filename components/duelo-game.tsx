@@ -9,6 +9,7 @@ import { Sparkles, Clock, Trophy, RotateCcw, CalendarPlus, X, Loader2, Check, Sw
 import { toast } from "sonner";
 import { DAYS_ES, MEAL_LABEL } from "@/lib/plan-labels";
 import type { MealType } from "@prisma/client";
+import { Button, buttonClass } from "@/components/ui/button";
 
 type Recipe = { id: string; slug: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
 type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipeTitle: string | null };
@@ -143,28 +144,16 @@ export function DueloGame() {
           ¿No sabes qué comer? Enfrenta los platos y deja que el mago elija por ti.
         </p>
         <div className="mt-8 flex w-full max-w-xs flex-col gap-3">
-          <button
-            onClick={() => start("LUNCH")}
-            disabled={loading}
-            className="rounded-xl border border-ink/10 bg-card px-4 py-3 font-medium text-ink transition hover:border-brand disabled:opacity-60"
-          >
+          <Button variant="secondary" fullWidth onClick={() => start("LUNCH")} disabled={loading}>
             Duelo de almuerzos
-          </button>
-          <button
-            onClick={() => start("DINNER")}
-            disabled={loading}
-            className="rounded-xl border border-ink/10 bg-card px-4 py-3 font-medium text-ink transition hover:border-brand disabled:opacity-60"
-          >
+          </Button>
+          <Button variant="secondary" fullWidth onClick={() => start("DINNER")} disabled={loading}>
             Duelo de cenas
-          </button>
-          <button
-            onClick={() => start()}
-            disabled={loading}
-            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800 disabled:opacity-60"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+          </Button>
+          <Button fullWidth loading={loading} onClick={() => start()}>
+            {!loading && <Sparkles className="h-4 w-4" />}
             Sorpréndeme
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -217,16 +206,10 @@ export function DueloGame() {
         </motion.div>
 
         <div className="mt-6 flex w-full max-w-sm flex-col gap-3">
-          <button
-            onClick={() => setAssignOpen(true)}
-            className="flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 font-medium text-white transition hover:bg-brand-800"
-          >
+          <Button fullWidth onClick={() => setAssignOpen(true)}>
             <CalendarPlus className="h-4 w-4" /> Añadir a mi semana
-          </button>
-          <Link
-            href={`/recetas/${champion.slug}`}
-            className="rounded-xl border border-ink/10 bg-card px-4 py-3 text-center font-medium text-ink transition hover:border-brand"
-          >
+          </Button>
+          <Link href={`/recetas/${champion.slug}`} className={buttonClass({ variant: "secondary", fullWidth: true })}>
             Ver receta
           </Link>
           <button

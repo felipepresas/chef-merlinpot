@@ -8,6 +8,7 @@ import { Plus, X, Clock, Loader2, UtensilsCrossed, Sparkles } from "lucide-react
 import { toast } from "sonner";
 import { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
 import type { MealType } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 
 type SlotRecipe = { id: string; title: string; slug: string } | null;
 type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipe: SlotRecipe };
@@ -91,20 +92,18 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
           </p>
         </div>
       )}
-      <button
+      <Button
         onClick={() => fill.mutate()}
-        disabled={fill.isPending || emptyCount === 0}
-        className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-50"
+        loading={fill.isPending}
+        disabled={emptyCount === 0}
+        fullWidth
+        className="mb-4"
       >
-        {fill.isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Sparkles className="h-4 w-4" />
-        )}
+        {!fill.isPending && <Sparkles className="h-4 w-4" />}
         {emptyCount === 0
           ? "Semana completa"
           : `Rellena mi semana${emptyCount < slots.length ? ` (${emptyCount})` : ""}`}
-      </button>
+      </Button>
 
       <div className="space-y-3">
         {DAYS_ES.map((dayName, day) => (

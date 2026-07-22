@@ -9,6 +9,8 @@ import {
   Sparkles,
   Swords,
 } from "lucide-react";
+import { buttonClass } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const steps = [
   {
@@ -45,9 +47,9 @@ export default async function Home() {
 
       <div className="relative mx-auto flex max-w-2xl flex-col items-center px-6 pb-20 pt-16 text-center">
         {/* ── Hero ── */}
-        <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-4 py-1.5 text-sm font-medium text-brand">
+        <Badge className="px-4 py-1.5 text-sm font-medium">
           <Sparkles className="h-4 w-4" /> by merlinpot
-        </span>
+        </Badge>
 
         <h1 className="mt-8 font-display text-6xl font-semibold tracking-tight text-ink sm:text-7xl">
           Chef
@@ -59,10 +61,7 @@ export default async function Home() {
         </p>
 
         <div className="mt-8 flex flex-col items-center gap-3">
-          <Link
-            href="/login"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand px-7 py-3.5 font-semibold text-white shadow-sm transition hover:bg-brand-800"
-          >
+          <Link href="/login" className={buttonClass({ size: "lg" })}>
             Empezar gratis <ArrowRight className="h-4 w-4" />
           </Link>
           <Link href="/login" className="text-sm text-ink/50 hover:text-brand">
@@ -115,10 +114,7 @@ export default async function Home() {
         {/* ── Cierre ── */}
         <section className="mt-16 flex flex-col items-center">
           <p className="font-display text-3xl font-semibold text-ink">Tu semana, servida.</p>
-          <Link
-            href="/login"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand px-7 py-3.5 font-semibold text-white shadow-sm transition hover:bg-brand-800"
-          >
+          <Link href="/login" className={buttonClass({ size: "lg", className: "mt-6" })}>
             Empezar gratis <ArrowRight className="h-4 w-4" />
           </Link>
         </section>
