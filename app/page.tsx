@@ -61,7 +61,7 @@ export default async function Home() {
         </p>
 
         <div className="mt-8 flex flex-col items-center gap-3">
-          <Link href="/login" className={buttonClass({ size: "lg" })}>
+          <Link href="/login?mode=register" className={buttonClass({ size: "lg" })}>
             Empezar gratis <ArrowRight className="h-4 w-4" />
           </Link>
           <Link href="/login" className="text-sm text-ink/50 hover:text-brand">
@@ -114,7 +114,7 @@ export default async function Home() {
         {/* ── Cierre ── */}
         <section className="mt-16 flex flex-col items-center">
           <p className="font-display text-3xl font-semibold text-ink">Tu semana, servida.</p>
-          <Link href="/login" className={buttonClass({ size: "lg", className: "mt-6" })}>
+          <Link href="/login?mode=register" className={buttonClass({ size: "lg", className: "mt-6" })}>
             Empezar gratis <ArrowRight className="h-4 w-4" />
           </Link>
         </section>
