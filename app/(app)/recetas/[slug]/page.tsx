@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getUserGoal } from "@/lib/goal";
 import { getRecipeBySlug, type RecipeStep } from "@/lib/recipes";
 import { RecipeVideo } from "@/components/recipe-video";
 import { formatQuantity } from "@/lib/units";
-import { ArrowLeft, Clock, Users, ChefHat } from "lucide-react";
+import { ArrowLeft, Clock, Users, ChefHat, Flame, Beef } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -11,8 +13,11 @@ const DIFFICULTY_LABEL: Record<string, string> = { EASY: "Fácil", MEDIUM: "Medi
 
 export default async function RecipePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const recipe = await getRecipeBySlug(slug);
+  const [recipe, user] = await Promise.all([getRecipeBySlug(slug), getCurrentUser()]);
   if (!recipe) notFound();
+
+  // Nutrición solo si el usuario tiene un objetivo activo (opt-in).
+  const showCalories = user ? (await getUserGoal(user.id)) !== null : false;
 
   const steps = (recipe.steps as unknown as RecipeStep[]) ?? [];
   const totalTime = (recipe.prepTimeMin ?? 0) + (recipe.cookTimeMin ?? 0);
@@ -38,7 +43,20 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
         <span className="inline-flex items-center gap-1">
           <ChefHat className="h-4 w-4 text-paprika" /> {DIFFICULTY_LABEL[recipe.difficulty]}
         </span>
+        {showCalories && recipe.calories != null && (
+          <span className="inline-flex items-center gap-1">
+            <Flame className="h-4 w-4 text-paprika" /> {recipe.calories} kcal
+          </span>
+        )}
+        {showCalories && recipe.proteinG != null && (
+          <span className="inline-flex items-center gap-1">
+            <Beef className="h-4 w-4 text-paprika" /> {recipe.proteinG} g proteína
+          </span>
+        )}
       </div>
+      {showCalories && recipe.calories != null && (
+        <p className="mt-1 text-xs text-ink/40">Valores aproximados por ración.</p>
+      )}
 
       {recipe.youtubeVideoId && (
         <div className="mt-6">

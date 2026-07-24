@@ -50,10 +50,12 @@ chef/
 
 Entidades núcleo (refinadas tras la [auditoría](AUDIT.md)):
 
-- **User** — `id`, `firebaseUid`, `email`, `name`, `prefs (Json — incl. householdSize)`
+- **User** — `id`, `firebaseUid`, `email`, `name`, `prefs (Json — incl. householdSize)`,
+  `diets (DietTag[])` (restricciones), `goal (Goal?)` (objetivo nutricional personal, opt-in)
 - **Recipe** — `id`, `slug`, `title`, `description`, `mealType (LUNCH|DINNER|BOTH)`,
   `servings`, `prepTimeMin`, `cookTimeMin`, `difficulty`, `youtubeVideoId`, `imageUrl`,
-  `steps (Json — array de { text, durationMin? })`, `cuisine`, `isSeed`
+  `steps (Json — array de { text, durationMin? })`, `cuisine`, `diets (DietTag[])`,
+  `calories?` (kcal por ración), `proteinG?` (proteína g por ración), `isSeed`
 - **Ingredient** — `id`, `name`, `category` (pasillo del súper), `defaultUnit (Unit)`,
   `isStaple` (despensa habitual → fuera de la compra por defecto)
 - **RecipeIngredient** — join `recipeId` × `ingredientId` + `quantity`, `unit (Unit)`, `note`
@@ -67,6 +69,8 @@ Entidades núcleo (refinadas tras la [auditoría](AUDIT.md)):
 **Enums**
 - `Unit` — `g, kg, ml, l, ud, cs, cc, diente, lata, manojo, al_gusto`
 - `MealType` — `LUNCH, DINNER` (extensible: `BREAKFAST, SNACK`)
+- `DietTag` — `VEGETARIANO, VEGANO, SIN_GLUTEN, SIN_LACTOSA` (restricciones)
+- `Goal` — `PERDER_PESO, MANTENER, GANAR_MUSCULO` (objetivo nutricional personal)
 
 **Lista de la compra:** se **genera** agregando los `RecipeIngredient` de todas las recetas
 asignadas a los huecos de la semana, agregando por **`(ingrediente, unidad)`** (mismas
@@ -76,6 +80,13 @@ ingredientes `isStaple` y los `al_gusto` no entran por defecto. El usuario marca
 
 **Escalado:** las cantidades son por `Recipe.servings`; escalar a la casa =
 `quantity × (User.prefs.householdSize / recipe.servings)`.
+
+**Nutrición y objetivos (Fase B):** capa **opt-in** y coherente con la marca (nunca un
+contador — ver [BRAND.md](BRAND.md)). `User.goal` es personal y nullable: `null` = sin
+calorías (experiencia por defecto); `MANTENER` solo muestra kcal; `PERDER_PESO`/`GANAR_MUSCULO`
+además **sesgan `fillWeek`** (`lib/nutrition.scoreRecipe`: cercanía a las kcal ideales por
+comida —cena más ligera que comida— + bonus de proteína). El objetivo lo aplica **quien pulsa**
+"Rellena mi semana". `Recipe.calories`/`proteinG` son **por ración**, curados en el seed.
 
 **El Duelo:** el estado del torneo vive en el cliente (no se persiste); la API solo sirve
 la lista de **candidatos** (filtrable por tipo de comida, tiempo, favoritos, etc.).

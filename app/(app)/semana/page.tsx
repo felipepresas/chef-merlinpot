@@ -1,5 +1,6 @@
 import { getCurrentUser } from "@/lib/auth/session";
 import { getOrCreateCurrentWeekPlan, mondayOf } from "@/lib/plan";
+import { getUserGoal } from "@/lib/goal";
 import { WeekGrid } from "@/components/week-grid";
 import { redirect } from "next/navigation";
 
@@ -9,7 +10,10 @@ export default async function SemanaPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const plan = await getOrCreateCurrentWeekPlan(user.id);
+  const [plan, goal] = await Promise.all([
+    getOrCreateCurrentWeekPlan(user.id),
+    getUserGoal(user.id),
+  ]);
   const monday = mondayOf();
 
   const slots = plan.slots
@@ -19,7 +23,15 @@ export default async function SemanaPage() {
       slotId: s.id,
       dayOfWeek: s.dayOfWeek,
       mealType: s.mealType,
-      recipe: s.recipe ? { id: s.recipe.id, title: s.recipe.title, slug: s.recipe.slug } : null,
+      recipe: s.recipe
+        ? {
+            id: s.recipe.id,
+            title: s.recipe.title,
+            slug: s.recipe.slug,
+            calories: s.recipe.calories,
+            proteinG: s.recipe.proteinG,
+          }
+        : null,
     }));
 
   return (
@@ -30,7 +42,7 @@ export default async function SemanaPage() {
           Del {monday.getUTCDate()}/{monday.getUTCMonth() + 1} · almuerzos y cenas
         </p>
       </div>
-      <WeekGrid initialSlots={slots} />
+      <WeekGrid initialSlots={slots} showCalories={goal !== null} />
     </div>
   );
 }

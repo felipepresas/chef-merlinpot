@@ -17,6 +17,8 @@ export async function getRecipes(mealType?: MealType, diets?: DietTag[]) {
       mealType: true,
       cookTimeMin: true,
       cuisine: true,
+      calories: true,
+      proteinG: true,
     },
   });
 }

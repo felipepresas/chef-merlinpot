@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 import { MEALS } from "@/lib/plan-labels";
 import { getHouseholdId } from "@/lib/household";
 import { getHouseholdDiets } from "@/lib/diet";
+import { getUserGoal } from "@/lib/goal";
+import { goalBiases, scoreRecipe } from "@/lib/nutrition";
 import { getRecipes } from "@/lib/recipes";
 import type { MealType } from "@prisma/client";
 
@@ -78,7 +80,9 @@ export async function assignRecipeToSlot(
   return prisma.planSlot.update({
     where: { id: slotId },
     data: { recipeId },
-    include: { recipe: { select: { id: true, title: true, slug: true } } },
+    include: {
+      recipe: { select: { id: true, title: true, slug: true, calories: true, proteinG: true } },
+    },
   });
 }
 
@@ -92,19 +96,25 @@ function shuffled<T>(arr: readonly T[]): T[] {
   return a;
 }
 
-export type FilledSlot = { slotId: string; recipe: { id: string; title: string; slug: string } };
+export type FilledSlot = {
+  slotId: string;
+  recipe: { id: string; title: string; slug: string; calories: number | null; proteinG: number | null };
+};
 
 /**
  * "Rellena mi semana": asigna una receta a cada hueco vacío del plan actual,
  * respetando el tipo de comida y la dieta del hogar, y evitando repetir recetas
- * ya presentes esa semana. Si se agota el catálogo de un tipo, rebaraja (permite
- * repetir). No pisa los huecos ya asignados. Devuelve solo los huecos rellenados.
+ * ya presentes esa semana. Si el usuario tiene un objetivo que sesga (perder/ganar),
+ * ordena el pool por encaje con el objetivo (kcal + proteína), con la cena más ligera;
+ * entre empates el orden sigue siendo aleatorio (variedad). Si se agota el catálogo de
+ * un tipo, rebaraja (permite repetir). No pisa los huecos ya asignados.
  */
 export async function fillWeek(userId: string): Promise<FilledSlot[]> {
   const householdId = await getHouseholdId(userId);
-  const [plan, diets] = await Promise.all([
+  const [plan, diets, goal] = await Promise.all([
     getOrCreateCurrentWeekPlan(userId),
     getHouseholdDiets(householdId),
+    getUserGoal(userId), // objetivo de quien pulsa (personal)
   ]);
 
   const pools = new Map<MealType, Awaited<ReturnType<typeof getRecipes>>>();
@@ -117,17 +127,28 @@ export async function fillWeek(userId: string): Promise<FilledSlot[]> {
     const pool = pools.get(meal) ?? [];
     if (pool.length === 0) continue;
 
+    // Baraja siempre (variedad) y, si el objetivo sesga, reordena por encaje de forma
+    // estable: los mejores primero, pero los empates conservan el orden aleatorio.
+    const orderPool = () => {
+      const s = shuffled(pool);
+      if (goalBiases(goal)) s.sort((a, b) => scoreRecipe(b, meal, goal) - scoreRecipe(a, meal, goal));
+      return s;
+    };
+
     const empty = plan.slots.filter((s) => s.mealType === meal && !s.recipeId);
     const used = new Set(
       plan.slots.filter((s) => s.mealType === meal && s.recipeId).map((s) => s.recipeId!),
     );
 
-    let queue = shuffled(pool).filter((r) => !used.has(r.id));
+    let queue = orderPool().filter((r) => !used.has(r.id));
     for (const slot of empty) {
-      if (queue.length === 0) queue = shuffled(pool); // agotado: permite repetir
+      if (queue.length === 0) queue = orderPool(); // agotado: permite repetir
       const pick = queue.shift()!;
       used.add(pick.id);
-      filled.push({ slotId: slot.id, recipe: { id: pick.id, title: pick.title, slug: pick.slug } });
+      filled.push({
+        slotId: slot.id,
+        recipe: { id: pick.id, title: pick.title, slug: pick.slug, calories: pick.calories, proteinG: pick.proteinG },
+      });
     }
   }
 

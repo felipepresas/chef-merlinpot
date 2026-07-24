@@ -46,6 +46,15 @@ enum DietTag {
   SIN_LACTOSA
 }
 
+// Objetivo nutricional personal del usuario (opt-in). null = sin objetivo (experiencia
+// por defecto, sin calorías). MANTENER solo muestra kcal; PERDER/GANAR además sesgan
+// "Rellena mi semana". Ver docs/BRAND.md: la nutrición es una capa opcional, nunca la puerta.
+enum Goal {
+  PERDER_PESO
+  MANTENER
+  GANAR_MUSCULO
+}
+
 // ─── Identidad ──────────────────────────────────────────────────
 
 model User {
@@ -55,6 +64,7 @@ model User {
   name        String?
   prefs       Json      @default("{\"householdSize\": 2}")
   diets       DietTag[] @default([]) // restricciones dietéticas del usuario
+  goal        Goal? // objetivo nutricional personal (opt-in); null = sin objetivo
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -91,6 +101,8 @@ model Recipe {
   steps          Json       @default("[]") // array de { text, durationMin? }
   cuisine        String?
   diets          DietTag[]  @default([]) // dietas que la receta cumple
+  calories       Int? // kcal por ración (Recipe.servings); curado, aproximado
+  proteinG       Int? // proteína en gramos por ración
   isSeed         Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

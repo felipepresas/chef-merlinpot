@@ -1,6 +1,7 @@
 import { FriendsManager } from "@/components/friends-manager";
 import { HouseholdSection } from "@/components/household-section";
 import { DietSection } from "@/components/diet-section";
+import { GoalSection } from "@/components/goal-section";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +15,7 @@ export default function AmigosPage() {
       <div className="space-y-8">
         <HouseholdSection />
         <DietSection />
+        <GoalSection />
         <FriendsManager />
       </div>
     </div>

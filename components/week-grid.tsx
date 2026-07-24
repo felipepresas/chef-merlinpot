@@ -4,17 +4,27 @@ import { useState } from "react";
 import Link from "next/link";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Plus, X, Clock, Loader2, UtensilsCrossed, Sparkles } from "lucide-react";
+import { Plus, X, Clock, Flame, Loader2, UtensilsCrossed, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { DAYS_ES, MEALS, MEAL_LABEL } from "@/lib/plan-labels";
+import { formatKcal } from "@/lib/nutrition";
 import type { MealType } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 
-type SlotRecipe = { id: string; title: string; slug: string } | null;
+type SlotRecipe = { id: string; title: string; slug: string; calories: number | null; proteinG: number | null } | null;
 type Slot = { slotId: string; dayOfWeek: number; mealType: MealType; recipe: SlotRecipe };
-type Recipe = { id: string; slug: string; title: string; mealType: MealType; cookTimeMin: number | null; cuisine: string | null };
+type Recipe = {
+  id: string;
+  slug: string;
+  title: string;
+  mealType: MealType;
+  cookTimeMin: number | null;
+  cuisine: string | null;
+  calories: number | null;
+  proteinG: number | null;
+};
 
-export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
+export function WeekGrid({ initialSlots, showCalories }: { initialSlots: Slot[]; showCalories: boolean }) {
   const [slots, setSlots] = useState<Slot[]>(initialSlots);
   const [openSlot, setOpenSlot] = useState<Slot | null>(null);
 
@@ -79,6 +89,14 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
   const slotFor = (day: number, meal: MealType) =>
     slots.find((s) => s.dayOfWeek === day && s.mealType === meal);
 
+  // Total de kcal del día (suma de comida + cena asignadas, por ración). null si no hay dato.
+  const dayKcal = (day: number): number | null => {
+    const vals = MEALS.map((m) => slotFor(day, m)?.recipe?.calories).filter(
+      (c): c is number => c != null,
+    );
+    return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
+  };
+
   return (
     <>
       {allEmpty && (
@@ -108,7 +126,14 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
       <div className="space-y-3">
         {DAYS_ES.map((dayName, day) => (
           <div key={day} className="rounded-2xl border border-ink/5 bg-card p-4">
-            <h2 className="mb-3 text-sm font-semibold text-ink">{dayName}</h2>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-ink">{dayName}</h2>
+              {showCalories && dayKcal(day) != null && (
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-ink/45">
+                  <Flame className="h-3 w-3 text-paprika" /> {formatKcal(dayKcal(day)!)}
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {MEALS.map((meal) => {
                 const slot = slotFor(day, meal);
@@ -187,7 +212,7 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                     openSlot &&
                     assign.mutate({
                       slotId: openSlot.slotId,
-                      recipe: { id: r.id, title: r.title, slug: r.slug },
+                      recipe: { id: r.id, title: r.title, slug: r.slug, calories: r.calories, proteinG: r.proteinG },
                     })
                   }
                   className="flex w-full items-center gap-3 rounded-xl border border-ink/5 bg-cream p-3 text-left transition hover:border-brand disabled:opacity-60"
@@ -202,6 +227,11 @@ export function WeekGrid({ initialSlots }: { initialSlots: Slot[] }) {
                       {r.cookTimeMin != null && (
                         <span className="inline-flex items-center gap-1">
                           <Clock className="h-3 w-3" /> {r.cookTimeMin} min
+                        </span>
+                      )}
+                      {showCalories && r.calories != null && (
+                        <span className="inline-flex items-center gap-1">
+                          <Flame className="h-3 w-3 text-paprika" /> {r.calories} kcal
                         </span>
                       )}
                     </span>

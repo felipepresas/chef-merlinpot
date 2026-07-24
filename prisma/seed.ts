@@ -23,6 +23,25 @@ const DIET_BY_SLUG: Record<string, DietTag[]> = {
   "arroz-con-pollo": [DietTag.SIN_GLUTEN, DietTag.SIN_LACTOSA],
 };
 
+// Nutrición por ración (kcal + proteína en g), curada y aproximada (Atwater 4/4/9 como
+// referencia mental). Las cenas tienden a ser más ligeras. Un solo número honesto por receta.
+const NUTRITION_BY_SLUG: Record<string, { calories: number; proteinG: number }> = {
+  "espaguetis-bolonesa": { calories: 700, proteinG: 34 },
+  "fajitas-de-pollo": { calories: 620, proteinG: 40 },
+  "tortilla-de-patatas": { calories: 320, proteinG: 12 },
+  "ensalada-cesar-pollo": { calories: 530, proteinG: 38 },
+  "lentejas-chorizo": { calories: 570, proteinG: 28 },
+  "crema-de-calabacin": { calories: 150, proteinG: 5 },
+  "pollo-al-horno-patatas": { calories: 650, proteinG: 45 },
+  "salmon-al-horno": { calories: 540, proteinG: 38 },
+  "garbanzos-espinacas": { calories: 240, proteinG: 12 },
+  "curry-lentejas": { calories: 530, proteinG: 20 },
+  "gazpacho-andaluz": { calories: 130, proteinG: 3 },
+  "pisto-manchego": { calories: 190, proteinG: 5 },
+  "ensalada-quinoa": { calories: 380, proteinG: 12 },
+  "arroz-con-pollo": { calories: 580, proteinG: 30 },
+};
+
 // ─── Ingredientes (name único, con pasillo, unidad por defecto y flag despensa) ──
 type IngredientSeed = { name: string; category: string; defaultUnit: Unit; isStaple?: boolean };
 const ingredients: IngredientSeed[] = [
@@ -394,6 +413,8 @@ async function main() {
       prepTimeMin: r.prepTimeMin, cookTimeMin: r.cookTimeMin, difficulty: r.difficulty ?? Difficulty.EASY,
       cuisine: r.cuisine, youtubeVideoId: r.youtubeVideoId, steps: r.steps, isSeed: true,
       diets: DIET_BY_SLUG[r.slug] ?? [],
+      calories: NUTRITION_BY_SLUG[r.slug]?.calories ?? null,
+      proteinG: NUTRITION_BY_SLUG[r.slug]?.proteinG ?? null,
     };
     await prisma.recipe.upsert({
       where: { slug: r.slug },
